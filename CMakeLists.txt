@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(asio_multithread_test LANGUAGES CXX)
+project(tcp_engine_sandbox LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,7 +9,7 @@ if(MSVC)
 endif()
 
 # TCP 네트워크 엔진 (git submodule).
-set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/net-tcp-engine)
+set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/tcp-engine)
 if(NOT EXISTS ${ENGINE_DIR}/CMakeLists.txt)
 	message(FATAL_ERROR "Engine submodule is missing. Run: git submodule update --init")
 endif()
