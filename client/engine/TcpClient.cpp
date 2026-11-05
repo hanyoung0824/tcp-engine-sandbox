@@ -1,4 +1,4 @@
-#include "Client.hpp"
+#include "TcpClient.hpp"
 
 #include "Connector.hpp"
 #include "Log.hpp"
@@ -6,17 +6,17 @@
 namespace asio = boost::asio;
 using asio::ip::tcp;
 
-Client::Client(Session::EventHandler handler)
+TcpClient::TcpClient(Session::EventHandler handler)
 	: m_handler(std::move(handler))
 {
 }
 
-Client::~Client()
+TcpClient::~TcpClient()
 {
 	close();
 }
 
-bool Client::connect(const std::string& host, unsigned short port)
+bool TcpClient::connect(const std::string& host, unsigned short port)
 {
 	if (m_session) {
 		writeLog(LogLevel::Error, "Already connected");
@@ -46,7 +46,7 @@ bool Client::connect(const std::string& host, unsigned short port)
 	return true;
 }
 
-void Client::send(std::shared_ptr<const Session::Buffer> data)
+void TcpClient::send(std::shared_ptr<const Session::Buffer> data)
 {
 	if (!m_session) {
 		return;
@@ -58,7 +58,7 @@ void Client::send(std::shared_ptr<const Session::Buffer> data)
 	});
 }
 
-void Client::close()
+void TcpClient::close()
 {
 	if (!m_networkThread.joinable()) {
 		return;

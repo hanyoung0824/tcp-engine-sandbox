@@ -7,12 +7,12 @@
 #include <memory>
 
 // 서버 프로그램의 뼈대 (네트워크 계층).
-// Server를 만들고, 세션 이벤트를 아래 가상 함수로, 받은 바이트를 패킷 매니저로 연결하고,
+// TcpServer를 만들고, 세션 이벤트를 아래 가상 함수로, 받은 바이트를 패킷 매니저로 연결하고,
 // 종료 신호가 올 때까지 실행하는 과정을 맡는다.
 // 응용은 이 클래스를 상속해 생성자에서 받을 패킷 클래스를 등록하고 필요한 함수만 재정의하며,
 // main에서는 run()만 호출한다.
 //
-//   class ChatServer : public ServerApp
+//   class ChatServer : public Server
 //   {
 //   public:
 //       ChatServer() { registerPacket<ChatPacket>(); }   // ChatPacket : C2S_Chat, handle() 오버라이드
@@ -21,17 +21,17 @@
 //
 // 가상 함수와 패킷의 handle()은 모두 run()을 호출한 스레드에서 호출된다
 // (onStart/onStop은 run() 처음과 끝, 나머지는 이벤트 루프 안).
-class ServerApp
+class Server
 {
 public:
-	virtual ~ServerApp() = default;
+	virtual ~Server() = default;
 
 	// 서버를 열고 종료 신호(Ctrl+C, SIGTERM)가 와서 모든 연결이 닫힐 때까지 실행한다.
 	// main()의 반환값으로 쓸 수 있도록, 정상 종료면 0, 시작에 실패하면 1을 반환한다.
 	int run(unsigned short port);
 
 protected:
-	ServerApp() = default;
+	Server() = default;
 
 	// 이 서버가 받을 패킷 클래스 T(IPacket 상속, handle() 구현)를 등록한다. 파생 클래스의 생성자에서 호출한다.
 	// run() 뒤에는 패킷 목록을 여러 스레드가 읽을 수 있으므로 등록하지 않는다.

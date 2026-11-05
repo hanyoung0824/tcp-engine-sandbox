@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ClientApp.hpp"
+#include "Client.hpp"
 
 #include <atomic>
 #include <memory>
@@ -8,12 +8,12 @@
 // 채팅 클라이언트 (응용 계층).
 // 입력한 줄을 C2S_Chat으로 서버에 보내고, 서버가 보내는 S2C_ChatNotify(다른 유저의 메시지, 서버 알림)를 받는 대로 출력한다.
 // 빈 줄을 입력하면 종료.
-// 접속과 네트워크 스레드는 ClientApp(네트워크 계층)이 맡고, 여기서는 이 프로그램만의 동작을 정한다.
-class ChatClient : public ClientApp
+// 접속과 네트워크 스레드는 Client(클라이언트 엔진)가 맡고, 여기서는 이 프로그램만의 동작을 정한다.
+class ChatClient : public Client
 {
 public:
 	// 클라이언트가 받을 패킷 클래스를 등록한다.
-	// 새 패킷은 app/common/ServerToClient.hpp에 공용 클래스를 만들고,
+	// 새 패킷은 protocol/ServerToClient.hpp에 공용 클래스를 만들고,
 	// packets/에 그 클래스를 상속해 handle()을 오버라이드한 클래스를 만들어 여기서 등록한다.
 	ChatClient();
 

@@ -1,14 +1,14 @@
-#include "ClientApp.hpp"
+#include "Client.hpp"
 
 #include <cstdint>
 #include <span>
 
-ClientApp::ClientApp()
+Client::Client()
 	: m_client(makeEventHandler())
 {
 }
 
-Session::EventHandler ClientApp::makeEventHandler()
+Session::EventHandler Client::makeEventHandler()
 {
 	// 람다는 이벤트가 올 때(접속 후) 호출되므로, 그때는 파생 클래스까지 다 만들어져 가상 함수가 제대로 불린다.
 	Session::EventHandler handler;
@@ -24,7 +24,7 @@ Session::EventHandler ClientApp::makeEventHandler()
 	return handler;
 }
 
-int ClientApp::run(const std::string& host, unsigned short port)
+int Client::run(const std::string& host, unsigned short port)
 {
 	// 이제부터 패킷 목록은 읽기만 한다.
 	m_running = true;

@@ -18,7 +18,21 @@ if(MSVC)
 	add_compile_options(/utf-8)
 endif()
 
-# net/: 네트워크 계층 (범용, 패킷 형식은 모른다)
-# app/: 응용(패킷) 계층 (이 채팅 프로그램의 패킷과 실행 파일)
-add_subdirectory(net)
-add_subdirectory(app)
+# 서버나 클라이언트 한쪽만 빌드할 수 있다 (예: cmake --preset ... -DBUILD_CLIENT=OFF).
+option(BUILD_SERVER "Build the server (engine + app)" ON)
+option(BUILD_CLIENT "Build the client (engine + app)" ON)
+
+# common/: 네트워크 공용 (서버·클라이언트 엔진이 함께 쓴다)
+# protocol/: 프로토콜 (서버·클라이언트 응용이 함께 쓰는 패킷 정의)
+# server/: 서버 엔진 + 서버 응용
+# client/: 클라이언트 엔진 + 클라이언트 응용
+add_subdirectory(common)
+add_subdirectory(protocol)
+
+if(BUILD_SERVER)
+	add_subdirectory(server)
+endif()
+
+if(BUILD_CLIENT)
+	add_subdirectory(client)
+endif()

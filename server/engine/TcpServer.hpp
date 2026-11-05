@@ -7,21 +7,21 @@
 
 #include <memory>
 
-// TCP 서버 하나를 묶은 모듈 (네트워크 계층).
+// TCP 서버 하나를 묶은 모듈 (네트워크 계층). 서버 프로그램의 뼈대인 Server가 내부에서 쓴다.
 // io_context, 접속 받기(Listener), 세션 목록(SessionManager), 종료 신호(Ctrl+C, SIGTERM) 처리를 한곳에 모았다.
 // 세션 이벤트(접속, 수신, 종료)의 처리는 생성할 때 넘긴 응용 쪽 함수에 맡긴다 (패킷 형식은 모른다).
 //
-// 사용 순서: Server server(port, handler); if (!server.start()) { 실패 } server.run();
+// 사용 순서: TcpServer server(port, handler); if (!server.start()) { 실패 } server.run();
 //
 // 지금은 run()을 호출한 스레드 하나가 모든 접속을 처리한다.
-class Server
+class TcpServer
 {
 public:
 	// handler: 모든 세션이 쓸 이벤트 처리 함수
-	Server(unsigned short port, Session::EventHandler handler);
+	TcpServer(unsigned short port, Session::EventHandler handler);
 
-	Server(const Server&) = delete;
-	Server& operator=(const Server&) = delete;
+	TcpServer(const TcpServer&) = delete;
+	TcpServer& operator=(const TcpServer&) = delete;
 
 	// 서버 소켓을 열고(listen) 접속 받기를 시작한다. 실패하면 이유를 출력한 뒤 false를 반환한다.
 	bool start();

@@ -8,7 +8,7 @@
 #include <string>
 #include <thread>
 
-// TCP 클라이언트 하나를 묶은 모듈 (네트워크 계층).
+// TCP 클라이언트 하나를 묶은 모듈 (네트워크 계층). 클라이언트 프로그램의 뼈대인 Client가 내부에서 쓴다.
 // io_context, 네트워크 스레드, 서버와의 세션을 한곳에 모았다.
 // 세션 이벤트(접속, 수신, 종료)의 처리는 생성할 때 넘긴 응용 쪽 함수에 맡긴다 (패킷 형식은 모른다).
 //
@@ -17,20 +17,20 @@
 //   세션 이벤트도 모두 이 스레드에서 호출된다.
 // - 호출하는 스레드(예: 메인): send()/close()는 할 일을 asio::post로 네트워크 스레드에 넘긴다.
 //
-// connect(), close(), 소멸자는 같은 스레드(Client를 만든 스레드)에서 호출한다.
-class Client
+// connect(), close(), 소멸자는 같은 스레드(TcpClient를 만든 스레드)에서 호출한다.
+class TcpClient
 {
 public:
-	explicit Client(Session::EventHandler handler);
+	explicit TcpClient(Session::EventHandler handler);
 
 	// 연결이 남아 있으면 닫고 네트워크 스레드가 끝나기를 기다린다.
-	~Client();
+	~TcpClient();
 
-	Client(const Client&) = delete;
-	Client& operator=(const Client&) = delete;
+	TcpClient(const TcpClient&) = delete;
+	TcpClient& operator=(const TcpClient&) = delete;
 
 	// 서버에 접속할 때까지 멈춰(blocking) 기다린 뒤, 받기를 시작하고 네트워크 스레드를 만든다.
-	// 실패하면 이유를 출력한 뒤 false를 반환한다. 한 Client로 한 번만 접속할 수 있다.
+	// 실패하면 이유를 출력한 뒤 false를 반환한다. 한 TcpClient로 한 번만 접속할 수 있다.
 	bool connect(const std::string& host, unsigned short port);
 
 	// data를 보낸다. 어느 스레드에서 불러도 된다. 연결이 없거나 닫혔으면 버린다.

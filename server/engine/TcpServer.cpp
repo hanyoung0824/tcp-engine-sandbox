@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "TcpServer.hpp"
 
 #include "Log.hpp"
 #include "SessionManager.hpp"
@@ -9,14 +9,14 @@
 namespace asio = boost::asio;
 using asio::ip::tcp;
 
-Server::Server(unsigned short port, Session::EventHandler handler)
+TcpServer::TcpServer(unsigned short port, Session::EventHandler handler)
 	: m_handler(std::move(handler)),
 	m_listener(m_ioContext, tcp::endpoint(tcp::v4(), port)),
 	m_signals(m_ioContext, SIGINT, SIGTERM)
 {
 }
 
-bool Server::start()
+bool TcpServer::start()
 {
 	// 1. 새 세션들이 쓸 이벤트 처리 함수를 세션 목록에 등록한다.
 	SessionManager::instance().setEventHandler(m_handler);
@@ -45,15 +45,15 @@ bool Server::start()
 	return true;
 }
 
-void Server::run()
+void TcpServer::run()
 {
 	// 완료된 비동기 작업의 콜백을 이 스레드에서 차례로 실행한다.
 	// 살아 있는 세션은 항상 읽기를 걸어 두므로, run()이 반환했다면 세션 목록은 이미 비어 있다.
-	// (세션 목록은 싱글톤이라 Server, 즉 io_context보다 늦게 소멸한다.)
+	// (세션 목록은 싱글톤이라 TcpServer, 즉 io_context보다 늦게 소멸한다.)
 	m_ioContext.run();
 }
 
-void Server::stop()
+void TcpServer::stop()
 {
 	// Listener, signal_set, 세션 목록은 run()을 실행하는 스레드에서만 건드리므로 그 스레드로 넘긴다.
 	// 걸려 있던 작업이 모두 취소되어 끝나면, 할 일이 없어진 run()이 스스로 반환한다 (io_context.stop()으로 강제로 멈추지 않는다).

@@ -17,11 +17,11 @@ class Session;
 // 세션이 받은 바이트를 size + id 헤더로 잘라, id로 등록된 패킷 클래스의 객체를 새로 만들고 read() -> handle()을 호출한다.
 // 형식이 잘못됐거나, 등록되지 않은 id이거나, 읽기에 실패하면 nullopt를 반환한다 (세션이 연결을 끊는다).
 //
-// ServerApp / ClientApp이 멤버로 하나씩 가진다. 응용은 이 클래스를 직접 만지지 않고
+// Server / Client(프로그램의 뼈대)가 멤버로 하나씩 가진다. 응용은 이 클래스를 직접 만지지 않고
 // 앱의 registerPacket<T>()로 등록한다 (앱 생성자에서, run() 전에).
 // 등록 후에는 읽기만 하므로 여러 스레드에서 onReceive()를 불러도 잠금이 필요 없다.
 //
-// Session은 이 클래스를 모른다(바이트만 다룬다). 앱이 Server/Client에 넘기는 수신 콜백이 onReceive()를 호출한다.
+// Session은 이 클래스를 모른다(바이트만 다룬다). Server/Client가 TcpServer/TcpClient에 넘기는 수신 콜백이 onReceive()를 호출한다.
 class PacketManager
 {
 public:
