@@ -2,14 +2,14 @@
 
 #include "ClientToServer.hpp"
 #include "ConsoleLog.hpp"
-#include "packets/ChatNotifyPacket.hpp"
+#include "packets/S2C_ChatNotifyHandler.hpp"
 
 #include <iostream>
 #include <string>
 
 ChatClient::ChatClient()
 {
-	registerPacket<ChatNotifyPacket>();
+	registerPacket<S2C_ChatNotifyHandler>();
 }
 
 bool ChatClient::onStart()

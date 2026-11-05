@@ -14,7 +14,7 @@ class ChatClient : public Client
 public:
 	// 클라이언트가 받을 패킷 클래스를 등록한다.
 	// 새 패킷은 protocol/ServerToClient.hpp에 공용 클래스를 만들고,
-	// packets/에 그 클래스를 상속해 handle()을 오버라이드한 클래스를 만들어 여기서 등록한다.
+	// packets/에 그 클래스를 상속해 handle()을 오버라이드한 클래스(이름은 패킷 이름 + Handler)를 만들어 여기서 등록한다.
 	ChatClient();
 
 private:

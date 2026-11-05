@@ -10,9 +10,9 @@ add_executable(server
 	User.cpp
 	UserManager.hpp
 	UserManager.cpp
-	packets/ChatPacket.hpp
-	packets/ChatPacket.cpp
+	packets/C2S_ChatHandler.hpp
+	packets/C2S_ChatHandler.cpp
 )
-# #include "packets/ChatPacket.hpp"처럼 쓸 수 있도록 이 폴더를 include 경로에 넣는다.
+# #include "packets/C2S_ChatHandler.hpp"처럼 쓸 수 있도록 이 폴더를 include 경로에 넣는다.
 target_include_directories(server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(server PRIVATE tcp::server protocol)

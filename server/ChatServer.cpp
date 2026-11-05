@@ -4,13 +4,13 @@
 #include "ServerToClient.hpp"
 #include "Session.hpp"
 #include "UserManager.hpp"
-#include "packets/ChatPacket.hpp"
+#include "packets/C2S_ChatHandler.hpp"
 
 #include <iostream>
 
 ChatServer::ChatServer()
 {
-	registerPacket<ChatPacket>();
+	registerPacket<C2S_ChatHandler>();
 }
 
 bool ChatServer::onStart()

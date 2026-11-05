@@ -5,8 +5,8 @@ add_executable(client
 	main.cpp
 	ChatClient.hpp
 	ChatClient.cpp
-	packets/ChatNotifyPacket.hpp
-	packets/ChatNotifyPacket.cpp
+	packets/S2C_ChatNotifyHandler.hpp
+	packets/S2C_ChatNotifyHandler.cpp
 )
 target_include_directories(client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(client PRIVATE tcp::client protocol)
