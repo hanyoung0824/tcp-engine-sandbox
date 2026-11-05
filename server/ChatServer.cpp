@@ -9,10 +9,10 @@
 
 ChatServer::ChatServer()
 {
-	registerHandler<C2S_Chat>([this](const auto& session, const C2S_Chat& packet) {
+	registerHandler<c2s::Chat>([this](const auto& session, const c2s::Chat& packet) {
 		handleChat(session, packet);
 	});
-	registerHandler<C2S_SetNickname>([this](const auto& session, const C2S_SetNickname& packet) {
+	registerHandler<c2s::SetNickname>([this](const auto& session, const c2s::SetNickname& packet) {
 		handleSetNickname(session, packet);
 	});
 }
@@ -36,11 +36,11 @@ void ChatServer::onDisconnected(const std::shared_ptr<tcpengine::Session>& sessi
 
 	m_users.remove(user->getId());
 	if (user->isEntered()) {
-		m_users.broadcast(S2C_ChatNotify("Server", user->getNickname() + " left"));
+		m_users.broadcast(s2c::ChatNotify("Server", user->getNickname() + " left"));
 	}
 }
 
-void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, const C2S_Chat& packet)
+void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, const c2s::Chat& packet)
 {
 	std::shared_ptr<User> user = m_users.find(session->getId());
 	if (!user) {
@@ -55,35 +55,35 @@ void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, 
 
 	std::cout << "[thread " << std::this_thread::get_id() << "] " << user->getNickname() << ": " << packet.message << '\n';
 
-	m_users.broadcast(S2C_ChatNotify(user->getNickname(), packet.message));
+	m_users.broadcast(s2c::ChatNotify(user->getNickname(), packet.message));
 }
 
-void ChatServer::handleSetNickname(const std::shared_ptr<tcpengine::Session>& session, const C2S_SetNickname& packet)
+void ChatServer::handleSetNickname(const std::shared_ptr<tcpengine::Session>& session, const c2s::SetNickname& packet)
 {
 	std::shared_ptr<User> user = m_users.find(session->getId());
 	if (!user) {
 		return;
 	}
 
-	SetNicknameResult result = SetNicknameResult::Ok;
+	NicknameResult result = NicknameResult::Ok;
 	if (user->isEntered()) {
-		result = SetNicknameResult::AlreadySet;
+		result = NicknameResult::AlreadySet;
 	}
 	else if (packet.nickname.empty()) {
-		result = SetNicknameResult::Empty;
+		result = NicknameResult::Empty;
 	}
 	else if (m_users.isNicknameTaken(packet.nickname)) {
-		result = SetNicknameResult::Duplicate;
+		result = NicknameResult::Duplicate;
 	}
 
-	if (result != SetNicknameResult::Ok) {
-		user->send(S2C_SetNicknameResult(result, ""));
+	if (result != NicknameResult::Ok) {
+		user->send(s2c::SetNicknameResult(result, ""));
 		return;
 	}
 
 	user->setNickname(packet.nickname);
 	std::cout << session->getAddress() << " entered as " << packet.nickname << '\n';
 
-	user->send(S2C_SetNicknameResult(SetNicknameResult::Ok, packet.nickname));
-	m_users.broadcast(S2C_ChatNotify("Server", packet.nickname + " joined"), user.get());
+	user->send(s2c::SetNicknameResult(NicknameResult::Ok, packet.nickname));
+	m_users.broadcast(s2c::ChatNotify("Server", packet.nickname + " joined"), user.get());
 }

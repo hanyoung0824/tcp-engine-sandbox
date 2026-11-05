@@ -18,9 +18,9 @@ private:
 
 	void onDisconnected(const std::shared_ptr<tcpengine::Session>& session) override;
 
-	void handleChat(const std::shared_ptr<tcpengine::Session>& session, const C2S_Chat& packet);
+	void handleChat(const std::shared_ptr<tcpengine::Session>& session, const c2s::Chat& packet);
 
-	void handleSetNickname(const std::shared_ptr<tcpengine::Session>& session, const C2S_SetNickname& packet);
+	void handleSetNickname(const std::shared_ptr<tcpengine::Session>& session, const c2s::SetNickname& packet);
 
 private:
 	UserManager m_users;

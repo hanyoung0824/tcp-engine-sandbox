@@ -7,10 +7,10 @@
 
 ChatClient::ChatClient()
 {
-	registerHandler<S2C_ChatNotify>([this](const auto&, const S2C_ChatNotify& packet) {
+	registerHandler<s2c::ChatNotify>([this](const auto&, const s2c::ChatNotify& packet) {
 		handleChatNotify(packet);
 	});
-	registerHandler<S2C_SetNicknameResult>([this](const auto&, const S2C_SetNicknameResult& packet) {
+	registerHandler<s2c::SetNicknameResult>([this](const auto&, const s2c::SetNicknameResult& packet) {
 		handleSetNicknameResult(packet);
 	});
 }
@@ -26,7 +26,7 @@ void ChatClient::onRun()
 				std::cerr << "Nickname too long (max " << maxNicknameLength << " bytes)\n";
 				continue;
 			}
-			send(C2S_SetNickname(line));
+			send(c2s::SetNickname(line));
 			continue;
 		}
 
@@ -35,7 +35,7 @@ void ChatClient::onRun()
 			continue;
 		}
 
-		send(C2S_Chat(line));
+		send(c2s::Chat(line));
 	}
 
 	m_quitting = true;
@@ -48,25 +48,25 @@ void ChatClient::onDisconnected(const std::shared_ptr<tcpengine::Session>&)
 	}
 }
 
-void ChatClient::handleChatNotify(const S2C_ChatNotify& packet)
+void ChatClient::handleChatNotify(const s2c::ChatNotify& packet)
 {
 	std::cout << '[' << packet.sender << "] " << packet.message << '\n' << std::flush;
 }
 
-void ChatClient::handleSetNicknameResult(const S2C_SetNicknameResult& packet)
+void ChatClient::handleSetNicknameResult(const s2c::SetNicknameResult& packet)
 {
 	switch (packet.result) {
-	case SetNicknameResult::Ok:
+	case NicknameResult::Ok:
 		m_state.setNickname(packet.nickname);
 		std::cout << "Entered the chat as " << packet.nickname << " (empty line to quit)\n" << std::flush;
 		return;
-	case SetNicknameResult::Empty:
+	case NicknameResult::Empty:
 		std::cout << "Nickname is empty.";
 		break;
-	case SetNicknameResult::Duplicate:
+	case NicknameResult::Duplicate:
 		std::cout << "Nickname is already in use.";
 		break;
-	case SetNicknameResult::AlreadySet:
+	case NicknameResult::AlreadySet:
 		std::cout << "Nickname is already set.\n" << std::flush;
 		return;
 	}

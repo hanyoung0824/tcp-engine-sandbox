@@ -18,9 +18,9 @@ private:
 
 	void onDisconnected(const std::shared_ptr<tcpengine::Session>& session) override;
 
-	void handleChatNotify(const S2C_ChatNotify& packet);
+	void handleChatNotify(const s2c::ChatNotify& packet);
 
-	void handleSetNicknameResult(const S2C_SetNicknameResult& packet);
+	void handleSetNicknameResult(const s2c::SetNicknameResult& packet);
 
 private:
 	ChatState m_state;

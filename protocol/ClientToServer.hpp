@@ -10,12 +10,13 @@
 #include <utility>
 
 // read()는 믿을 수 없는 입력이므로 형식과 길이 검사 필수
-
-class C2S_Chat : public tcpengine::ClientToServerPacket
+namespace c2s
+{
+class Chat : public tcpengine::IPacket
 {
 public:
-	C2S_Chat() = default;
-	explicit C2S_Chat(std::string message)
+	Chat() = default;
+	explicit Chat(std::string message)
 		: message(std::move(message))
 	{
 	}
@@ -36,11 +37,11 @@ public:
 	std::string message;
 };
 
-class C2S_SetNickname : public tcpengine::ClientToServerPacket
+class SetNickname : public tcpengine::IPacket
 {
 public:
-	C2S_SetNickname() = default;
-	explicit C2S_SetNickname(std::string nickname)
+	SetNickname() = default;
+	explicit SetNickname(std::string nickname)
 		: nickname(std::move(nickname))
 	{
 	}
@@ -61,3 +62,4 @@ public:
 public:
 	std::string nickname;
 };
+}

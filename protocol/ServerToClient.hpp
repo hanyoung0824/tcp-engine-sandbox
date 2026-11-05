@@ -10,12 +10,13 @@
 #include <utility>
 
 // read()는 믿을 수 없는 입력이므로 형식과 길이 검사 필수
-
-class S2C_ChatNotify : public tcpengine::ServerToClientPacket
+namespace s2c
+{
+class ChatNotify : public tcpengine::IPacket
 {
 public:
-	S2C_ChatNotify() = default;
-	S2C_ChatNotify(std::string sender, std::string message)
+	ChatNotify() = default;
+	ChatNotify(std::string sender, std::string message)
 		: sender(std::move(sender)),
 		message(std::move(message))
 	{
@@ -39,11 +40,11 @@ public:
 	std::string message;
 };
 
-class S2C_SetNicknameResult : public tcpengine::ServerToClientPacket
+class SetNicknameResult : public tcpengine::IPacket
 {
 public:
-	S2C_SetNicknameResult() = default;
-	S2C_SetNicknameResult(SetNicknameResult result, std::string nickname)
+	SetNicknameResult() = default;
+	SetNicknameResult(NicknameResult result, std::string nickname)
 		: result(result),
 		nickname(std::move(nickname))
 	{
@@ -54,10 +55,10 @@ public:
 	bool read(tcpengine::PacketReader& reader) override
 	{
 		std::uint16_t value = 0;
-		if (!reader.readUInt16(value) || value > static_cast<std::uint16_t>(SetNicknameResult::AlreadySet)) {
+		if (!reader.readUInt16(value) || value > static_cast<std::uint16_t>(NicknameResult::AlreadySet)) {
 			return false;
 		}
-		result = static_cast<SetNicknameResult>(value);
+		result = static_cast<NicknameResult>(value);
 		return reader.readString(nickname) && nickname.size() <= maxNicknameLength;
 	}
 
@@ -68,6 +69,7 @@ public:
 	}
 
 public:
-	SetNicknameResult result = SetNicknameResult::Ok;
+	NicknameResult result = NicknameResult::Ok;
 	std::string nickname;
 };
+}

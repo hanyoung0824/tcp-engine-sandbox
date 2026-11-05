@@ -15,7 +15,7 @@ constexpr std::size_t maxChatMessageLength = 1024;
 
 constexpr std::size_t maxNicknameLength = 16;
 
-enum class SetNicknameResult : std::uint16_t
+enum class NicknameResult : std::uint16_t
 {
 	Ok = 0,
 	Empty = 1,
