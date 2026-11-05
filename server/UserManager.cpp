@@ -1,26 +1,18 @@
 #include "UserManager.hpp"
 
-#include "PacketHelper.hpp"
-
-UserManager& UserManager::instance()
-{
-	static UserManager instance;
-	return instance;
-}
-
-std::shared_ptr<User> UserManager::add(const std::shared_ptr<Session>& session)
+std::shared_ptr<User> UserManager::add(const std::shared_ptr<tcpengine::Session>& session)
 {
 	auto user = std::make_shared<User>(session);
 	m_users[user->getId()] = user;
 	return user;
 }
 
-void UserManager::remove(Session::SessionId id)
+void UserManager::remove(tcpengine::Session::SessionId id)
 {
 	m_users.erase(id);
 }
 
-std::shared_ptr<User> UserManager::find(Session::SessionId id) const
+std::shared_ptr<User> UserManager::find(tcpengine::Session::SessionId id) const
 {
 	const auto it = m_users.find(id);
 	return it != m_users.end() ? it->second : nullptr;
@@ -36,9 +28,9 @@ bool UserManager::isNicknameTaken(const std::string& nickname) const
 	return false;
 }
 
-void UserManager::broadcast(const IPacket& packet, const User* except)
+void UserManager::broadcast(const tcpengine::IPacket& packet, const User* except)
 {
-	std::shared_ptr<const PacketBuffer> buffer = makePacket(packet);
+	std::shared_ptr<const tcpengine::Session::Buffer> buffer = packet.serialize();
 	if (!buffer) {
 		return;
 	}

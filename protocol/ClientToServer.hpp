@@ -9,9 +9,9 @@
 #include <string>
 #include <utility>
 
-// read()는 믿을 수 없는 입력을 읽으므로 형식과 길이를 검사한다.
+// read()는 믿을 수 없는 입력이므로 형식과 길이 검사 필수
 
-class C2S_Chat : public ClientToServerPacket
+class C2S_Chat : public tcpengine::ClientToServerPacket
 {
 public:
 	C2S_Chat() = default;
@@ -22,12 +22,12 @@ public:
 
 	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::C2S_Chat); }
 
-	bool read(PacketReader& reader) override
+	bool read(tcpengine::PacketReader& reader) override
 	{
 		return reader.readString(message) && message.size() <= maxChatMessageLength;
 	}
 
-	void write(PacketWriter& writer) const override
+	void write(tcpengine::PacketWriter& writer) const override
 	{
 		writer.writeString(message);
 	}
@@ -36,7 +36,7 @@ public:
 	std::string message;
 };
 
-class C2S_SetNickname : public ClientToServerPacket
+class C2S_SetNickname : public tcpengine::ClientToServerPacket
 {
 public:
 	C2S_SetNickname() = default;
@@ -47,13 +47,13 @@ public:
 
 	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::C2S_SetNickname); }
 
-	// 너무 길면 조작된 패킷으로 보고 연결을 끊는다. 빈 닉네임과 중복은 결과 패킷으로 알린다.
-	bool read(PacketReader& reader) override
+	// 너무 길면 조작된 패킷으로 보고 연결 끊음. 빈 닉네임과 중복은 결과 패킷으로 알림
+	bool read(tcpengine::PacketReader& reader) override
 	{
 		return reader.readString(nickname) && nickname.size() <= maxNicknameLength;
 	}
 
-	void write(PacketWriter& writer) const override
+	void write(tcpengine::PacketWriter& writer) const override
 	{
 		writer.writeString(nickname);
 	}

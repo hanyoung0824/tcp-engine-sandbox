@@ -1,7 +1,5 @@
 #pragma once
 
-#include "PacketHeader.hpp"
-
 #include <cstddef>
 #include <cstdint>
 

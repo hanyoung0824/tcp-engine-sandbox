@@ -1,18 +1,18 @@
 #include "User.hpp"
 
-#include "PacketHelper.hpp"
-
-User::User(std::shared_ptr<Session> session)
+User::User(std::shared_ptr<tcpengine::Session> session)
 	: m_session(std::move(session))
 {
 }
 
-void User::send(const IPacket& packet)
+void User::send(const tcpengine::IPacket& packet)
 {
-	sendPacket(*m_session, packet);
+	if (auto buffer = packet.serialize()) {
+		m_session->send(std::move(buffer));
+	}
 }
 
-void User::send(std::shared_ptr<const PacketBuffer> buffer)
+void User::send(std::shared_ptr<const tcpengine::Session::Buffer> buffer)
 {
 	m_session->send(std::move(buffer));
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IPacket.hpp"
-#include "PacketHeader.hpp"
 #include "Session.hpp"
 
 #include <memory>
@@ -11,20 +10,20 @@
 class User
 {
 public:
-	explicit User(std::shared_ptr<Session> session);
+	explicit User(std::shared_ptr<tcpengine::Session> session);
 
-	Session::SessionId getId() const { return m_session->getId(); }
+	tcpengine::Session::SessionId getId() const { return m_session->getId(); }
 
 	const std::string& getNickname() const { return m_nickname; }
 	void setNickname(std::string nickname) { m_nickname = std::move(nickname); }
 
 	bool isEntered() const { return !m_nickname.empty(); }
 
-	void send(const IPacket& packet);
+	void send(const tcpengine::IPacket& packet);
 
-	void send(std::shared_ptr<const PacketBuffer> buffer);
+	void send(std::shared_ptr<const tcpengine::Session::Buffer> buffer);
 
 private:
-	std::shared_ptr<Session> m_session;
+	std::shared_ptr<tcpengine::Session> m_session;
 	std::string m_nickname;
 };

@@ -8,30 +8,25 @@
 #include <string>
 #include <unordered_map>
 
-// io_context 스레드 하나에서만 쓰므로 잠금이 없다.
+// io_context 스레드 하나에서만 쓰므로 잠금 없음
 class UserManager
 {
 public:
-	static UserManager& instance();
+	UserManager() = default;
 
 	UserManager(const UserManager&) = delete;
 	UserManager& operator=(const UserManager&) = delete;
 
-	std::shared_ptr<User> add(const std::shared_ptr<Session>& session);
+	std::shared_ptr<User> add(const std::shared_ptr<tcpengine::Session>& session);
 
-	void remove(Session::SessionId id);
+	void remove(tcpengine::Session::SessionId id);
 
-	std::shared_ptr<User> find(Session::SessionId id) const;
+	std::shared_ptr<User> find(tcpengine::Session::SessionId id) const;
 
 	bool isNicknameTaken(const std::string& nickname) const;
 
-	void broadcast(const IPacket& packet, const User* except = nullptr);
-
-	std::size_t size() const { return m_users.size(); }
+	void broadcast(const tcpengine::IPacket& packet, const User* except = nullptr);
 
 private:
-	UserManager() = default;
-
-private:
-	std::unordered_map<Session::SessionId, std::shared_ptr<User>> m_users;
+	std::unordered_map<tcpengine::Session::SessionId, std::shared_ptr<User>> m_users;
 };

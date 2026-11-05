@@ -8,7 +8,7 @@ if(MSVC)
 	add_compile_options(/utf-8)
 endif()
 
-# TCP 네트워크 엔진 (git submodule).
+# TCP 네트워크 엔진 (git submodule)
 set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/tcp-engine)
 if(NOT EXISTS ${ENGINE_DIR}/CMakeLists.txt)
 	message(FATAL_ERROR "Engine submodule is missing. Run: git submodule update --init")
@@ -19,6 +19,7 @@ option(BUILD_SERVER "Build the chat server" ON)
 option(BUILD_CLIENT "Build the chat client" ON)
 
 add_subdirectory(protocol)
+add_subdirectory(config)
 
 if(BUILD_SERVER)
 	add_subdirectory(server)
