@@ -1,16 +1,17 @@
 #include "ChatServer.hpp"
 
+#include "ClientToServerHandler.hpp"
 #include "ConsoleLog.hpp"
 #include "ServerToClient.hpp"
 #include "Session.hpp"
 #include "UserManager.hpp"
-#include "packets/C2S_ChatHandler.hpp"
 
 #include <iostream>
 
 ChatServer::ChatServer()
 {
 	registerPacket<C2S_ChatHandler>();
+	registerPacket<C2S_SetNicknameHandler>();
 }
 
 bool ChatServer::onStart()
@@ -26,8 +27,7 @@ void ChatServer::onStop()
 
 void ChatServer::onConnected(const std::shared_ptr<Session>& session)
 {
-	std::shared_ptr<User> user = UserManager::instance().add(session);
-	UserManager::instance().broadcast(S2C_ChatNotify("Server", user->getName() + " joined"));
+	UserManager::instance().add(session);
 }
 
 void ChatServer::onDisconnected(const std::shared_ptr<Session>& session)
@@ -38,5 +38,7 @@ void ChatServer::onDisconnected(const std::shared_ptr<Session>& session)
 	}
 
 	UserManager::instance().remove(user->getId());
-	UserManager::instance().broadcast(S2C_ChatNotify("Server", user->getName() + " left"));
+	if (user->isEntered()) {
+		UserManager::instance().broadcast(S2C_ChatNotify("Server", user->getNickname() + " left"));
+	}
 }

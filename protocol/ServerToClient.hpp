@@ -1,22 +1,17 @@
 #pragma once
 
 #include "IPacket.hpp"
-#include "Log.hpp"
 #include "PacketReader.hpp"
 #include "PacketWriter.hpp"
 #include "Protocol.hpp"
 
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <utility>
 
-// 서버 -> 클라이언트 공용 패킷 클래스 (응용 계층).
-// 서버는 이 클래스로 만들어 보내고(write), 클라이언트는 이 클래스를 상속해 handle()을 오버라이드한 클래스로 받는다(read).
-// handle()의 기본 구현은 "받는 쪽 클래스가 아니다"라는 경고만 남긴다 (보내는 쪽에서 객체를 만들 수 있도록).
+// read()는 믿을 수 없는 입력을 읽으므로 형식과 길이를 검사한다.
 
-// 채팅 알림. 누군가 보낸 채팅이나 서버의 알림(접속, 종료)을 모든 클라이언트에게 전한다.
-class S2C_ChatNotify : public IPacket
+class S2C_ChatNotify : public ServerToClientPacket
 {
 public:
 	S2C_ChatNotify() = default;
@@ -39,12 +34,40 @@ public:
 		writer.writeString(message);
 	}
 
-	void handle(const std::shared_ptr<Session>&) override
+public:
+	std::string sender;
+	std::string message;
+};
+
+class S2C_SetNicknameResult : public ServerToClientPacket
+{
+public:
+	S2C_SetNicknameResult() = default;
+	S2C_SetNicknameResult(SetNicknameResult result, std::string nickname)
+		: result(result),
+		nickname(std::move(nickname))
 	{
-		writeLog(LogLevel::Warning, "S2C_ChatNotify has no handler on this side");
+	}
+
+	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::S2C_SetNicknameResult); }
+
+	bool read(PacketReader& reader) override
+	{
+		std::uint16_t value = 0;
+		if (!reader.readUInt16(value) || value > static_cast<std::uint16_t>(SetNicknameResult::AlreadySet)) {
+			return false;
+		}
+		result = static_cast<SetNicknameResult>(value);
+		return reader.readString(nickname) && nickname.size() <= maxNicknameLength;
+	}
+
+	void write(PacketWriter& writer) const override
+	{
+		writer.writeUInt16(static_cast<std::uint16_t>(result));
+		writer.writeString(nickname);
 	}
 
 public:
-	std::string sender; // 보낸 사람
-	std::string message; // 채팅 메시지
+	SetNicknameResult result = SetNicknameResult::Ok;
+	std::string nickname;
 };

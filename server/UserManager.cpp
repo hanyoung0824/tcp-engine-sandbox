@@ -4,7 +4,6 @@
 
 UserManager& UserManager::instance()
 {
-	// 처음 호출될 때 한 번만 만들어진다 (C++11부터 이 초기화는 스레드 안전하다).
 	static UserManager instance;
 	return instance;
 }
@@ -27,15 +26,26 @@ std::shared_ptr<User> UserManager::find(Session::SessionId id) const
 	return it != m_users.end() ? it->second : nullptr;
 }
 
-void UserManager::broadcast(const IPacket& packet)
+bool UserManager::isNicknameTaken(const std::string& nickname) const
+{
+	for (const auto& [id, user] : m_users) {
+		if (user->isEntered() && user->getNickname() == nickname) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void UserManager::broadcast(const IPacket& packet, const User* except)
 {
 	std::shared_ptr<const PacketBuffer> buffer = makePacket(packet);
 	if (!buffer) {
 		return;
 	}
 
-	// User::send()는 큐에 넣고 바로 반환하며 그 자리에서 목록을 바꾸지 않으므로, 순회하는 동안 목록이 바뀌지 않는다.
 	for (const auto& [id, user] : m_users) {
-		user->send(buffer);
+		if (user->isEntered() && user.get() != except) {
+			user->send(buffer);
+		}
 	}
 }

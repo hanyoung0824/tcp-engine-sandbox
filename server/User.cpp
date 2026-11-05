@@ -3,8 +3,7 @@
 #include "PacketHelper.hpp"
 
 User::User(std::shared_ptr<Session> session)
-	: m_session(std::move(session)),
-	m_name(m_session->getName())
+	: m_session(std::move(session))
 {
 }
 

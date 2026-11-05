@@ -1,22 +1,17 @@
 #pragma once
 
 #include "IPacket.hpp"
-#include "Log.hpp"
 #include "PacketReader.hpp"
 #include "PacketWriter.hpp"
 #include "Protocol.hpp"
 
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <utility>
 
-// 클라이언트 -> 서버 공용 패킷 클래스 (응용 계층).
-// 클라이언트는 이 클래스로 만들어 보내고(write), 서버는 이 클래스를 상속해 handle()을 오버라이드한 클래스로 받는다(read).
-// handle()의 기본 구현은 "받는 쪽 클래스가 아니다"라는 경고만 남긴다 (보내는 쪽에서 객체를 만들 수 있도록).
+// read()는 믿을 수 없는 입력을 읽으므로 형식과 길이를 검사한다.
 
-// 채팅 보내기
-class C2S_Chat : public IPacket
+class C2S_Chat : public ClientToServerPacket
 {
 public:
 	C2S_Chat() = default;
@@ -27,7 +22,6 @@ public:
 
 	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::C2S_Chat); }
 
-	// 받은 데이터는 믿을 수 없으므로 형식과 길이를 모두 검사한다.
 	bool read(PacketReader& reader) override
 	{
 		return reader.readString(message) && message.size() <= maxChatMessageLength;
@@ -38,11 +32,32 @@ public:
 		writer.writeString(message);
 	}
 
-	void handle(const std::shared_ptr<Session>&) override
+public:
+	std::string message;
+};
+
+class C2S_SetNickname : public ClientToServerPacket
+{
+public:
+	C2S_SetNickname() = default;
+	explicit C2S_SetNickname(std::string nickname)
+		: nickname(std::move(nickname))
 	{
-		writeLog(LogLevel::Warning, "C2S_Chat has no handler on this side");
+	}
+
+	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::C2S_SetNickname); }
+
+	// 너무 길면 조작된 패킷으로 보고 연결을 끊는다. 빈 닉네임과 중복은 결과 패킷으로 알린다.
+	bool read(PacketReader& reader) override
+	{
+		return reader.readString(nickname) && nickname.size() <= maxNicknameLength;
+	}
+
+	void write(PacketWriter& writer) const override
+	{
+		writer.writeString(nickname);
 	}
 
 public:
-	std::string message; // 채팅 메시지
+	std::string nickname;
 };
