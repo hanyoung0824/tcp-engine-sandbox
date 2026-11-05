@@ -8,5 +8,5 @@ add_library(protocol INTERFACE
 	ServerToClient.hpp
 )
 target_include_directories(protocol INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-# 공용 패킷 클래스가 common의 패킷 틀(IPacket, PacketReader/Writer)을 쓰므로 common도 함께 연결한다.
-target_link_libraries(protocol INTERFACE common)
+# 공용 패킷 클래스가 엔진의 패킷 틀(IPacket, PacketReader/Writer)을 쓰므로 tcp::common도 함께 연결한다.
+target_link_libraries(protocol INTERFACE tcp::common)
