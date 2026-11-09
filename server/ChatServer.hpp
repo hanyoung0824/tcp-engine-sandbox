@@ -11,13 +11,14 @@ class ChatServer : public tcpengine::Server
 public:
 	ChatServer();
 
-private:
+protected:
 	void onStop() override;
 
-	void onConnected(const std::shared_ptr<tcpengine::Session>& session) override;
+	void onSessionConnected(const std::shared_ptr<tcpengine::Session>& session) override;
 
-	void onDisconnected(const std::shared_ptr<tcpengine::Session>& session) override;
+	void onSessionDisconnected(const std::shared_ptr<tcpengine::Session>& session) override;
 
+private:
 	void handleChat(const std::shared_ptr<tcpengine::Session>& session, const c2s::Chat& packet);
 
 	void handleSetNickname(const std::shared_ptr<tcpengine::Session>& session, const c2s::SetNickname& packet);

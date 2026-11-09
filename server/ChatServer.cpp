@@ -22,12 +22,12 @@ void ChatServer::onStop()
 	std::cout << "Server stopped\n";
 }
 
-void ChatServer::onConnected(const std::shared_ptr<tcpengine::Session>& session)
+void ChatServer::onSessionConnected(const std::shared_ptr<tcpengine::Session>& session)
 {
 	m_users.add(session);
 }
 
-void ChatServer::onDisconnected(const std::shared_ptr<tcpengine::Session>& session)
+void ChatServer::onSessionDisconnected(const std::shared_ptr<tcpengine::Session>& session)
 {
 	std::shared_ptr<User> user = m_users.find(session->getId());
 	if (!user) {
