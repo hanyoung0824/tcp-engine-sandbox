@@ -1,10 +1,12 @@
 #include "ChatServer.hpp"
 
-#include "Log.hpp"
 #include "ServerToClient.hpp"
-#include "Session.hpp"
+#include "tcpengine/network/Session.hpp"
+#include "tcpengine/utility/ConsoleLogger.hpp"
+#include "tcpengine/utility/Log.hpp"
 
 #include <iostream>
+#include <memory>
 #include <thread>
 
 ChatServer::ChatServer()
@@ -15,6 +17,12 @@ ChatServer::ChatServer()
 	registerHandler<c2s::SetNickname>([this](const auto& session, const c2s::SetNickname& packet) {
 		handleSetNickname(session, packet);
 	});
+}
+
+bool ChatServer::onStart()
+{
+	tcpengine::setLogger(std::make_shared<tcpengine::ConsoleLogger>());
+	return true;
 }
 
 void ChatServer::onStop()
@@ -49,7 +57,7 @@ void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, 
 
 	// 정상 클라이언트는 입장 전에 채팅을 보내지 않음. 연결은 유지하고 패킷만 버림
 	if (!user->isEntered()) {
-		tcpengine::writeLog(tcpengine::LogLevel::Warning, "Chat before setting a nickname from ", session->getAddress(), ", ignored");
+		tcpengine::logWarning("Chat before setting a nickname from ", session->getAddress(), ", ignored");
 		return;
 	}
 

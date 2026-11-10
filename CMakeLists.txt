@@ -19,7 +19,6 @@ option(BUILD_SERVER "Build the chat server" ON)
 option(BUILD_CLIENT "Build the chat client" ON)
 
 add_subdirectory(protocol)
-add_subdirectory(config)
 
 if(BUILD_SERVER)
 	add_subdirectory(server)

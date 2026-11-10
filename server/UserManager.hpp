@@ -1,8 +1,8 @@
 #pragma once
 
-#include "IPacket.hpp"
-#include "Session.hpp"
 #include "User.hpp"
+#include "tcpengine/network/Session.hpp"
+#include "tcpengine/network/packet/IPacket.hpp"
 
 #include <memory>
 #include <string>

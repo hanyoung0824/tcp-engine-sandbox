@@ -1,9 +1,9 @@
 #pragma once
 
-#include "IPacket.hpp"
-#include "PacketReader.hpp"
-#include "PacketWriter.hpp"
 #include "Protocol.hpp"
+#include "tcpengine/network/packet/IPacket.hpp"
+#include "tcpengine/network/packet/PacketReader.hpp"
+#include "tcpengine/network/packet/PacketWriter.hpp"
 
 #include <cstdint>
 #include <string>

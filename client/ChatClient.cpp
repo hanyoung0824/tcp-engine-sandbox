@@ -1,8 +1,11 @@
 #include "ChatClient.hpp"
 
 #include "ClientToServer.hpp"
+#include "tcpengine/utility/ConsoleLogger.hpp"
+#include "tcpengine/utility/Log.hpp"
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 ChatClient::ChatClient()
@@ -13,6 +16,12 @@ ChatClient::ChatClient()
 	registerHandler<s2c::SetNicknameResult>([this](const auto&, const s2c::SetNicknameResult& packet) {
 		handleSetNicknameResult(packet);
 	});
+}
+
+bool ChatClient::onStart()
+{
+	tcpengine::setLogger(std::make_shared<tcpengine::ConsoleLogger>());
+	return true;
 }
 
 void ChatClient::onRun()

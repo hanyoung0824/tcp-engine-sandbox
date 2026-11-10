@@ -1,6 +1,4 @@
 {
 	"host": "127.0.0.1",
-	"port": 12345,
-	"heartbeat": { "interval": 10, "timeout": 30 },
-	"logLevel": "warning"
+	"port": 12345
 }

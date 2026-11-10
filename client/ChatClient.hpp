@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ChatState.hpp"
-#include "Client.hpp"
 #include "ServerToClient.hpp"
+#include "tcpengine/client/Client.hpp"
 
 #include <atomic>
 #include <memory>
@@ -14,6 +14,8 @@ public:
 	ChatClient();
 
 protected:
+	bool onStart() override;
+
 	void onRun() override;
 
 	void onDisconnected(const std::shared_ptr<tcpengine::Session>& session) override;
