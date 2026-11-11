@@ -1,4 +1,11 @@
 {
-	"port": 12345,
-	"heartbeat": { "interval": 10, "timeout": 30 }
+	"engine": {
+		"transport": "tcp",
+		"port": 12345,
+		"heartbeat": { "interval": 10, "timeout": 30 },
+		"session": { "resumeTimeout": 30 }
+	},
+	"app": {
+		"noticeSender": "Server"
+	}
 }

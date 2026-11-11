@@ -1,18 +1,19 @@
 #include "User.hpp"
 
-User::User(std::shared_ptr<tcpengine::Session> session)
-	: m_session(std::move(session))
+#include <utility>
+
+User::User(std::shared_ptr<tcpengine::Session> session, std::string nickname)
+	: m_session(std::move(session)),
+	m_nickname(std::move(nickname))
 {
 }
 
-void User::send(const tcpengine::IPacket& packet)
+void User::send(const tcpengine::PacketBase& packet)
 {
-	if (auto buffer = packet.serialize()) {
-		m_session->send(std::move(buffer));
-	}
+	m_session->send(packet);
 }
 
-void User::send(std::shared_ptr<const tcpengine::Session::Buffer> buffer)
+void User::send(std::shared_ptr<const tcpengine::PacketBuffer> buffer)
 {
 	m_session->send(std::move(buffer));
 }

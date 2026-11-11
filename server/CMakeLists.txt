@@ -1,6 +1,8 @@
 add_executable(server
 	main.cpp
 	ChatServer.hpp
+	ChatServerSettings.hpp
+	ChatServerSettings.cpp
 	ChatServer.cpp
 	User.hpp
 	User.cpp

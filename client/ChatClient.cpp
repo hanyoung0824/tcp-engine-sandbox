@@ -1,14 +1,13 @@
 #include "ChatClient.hpp"
 
 #include "ClientToServer.hpp"
-#include "tcpengine/utility/ConsoleLogger.hpp"
 #include "tcpengine/utility/Log.hpp"
 
 #include <iostream>
-#include <memory>
 #include <string>
 
-ChatClient::ChatClient()
+ChatClient::ChatClient(const tcpengine::ClientSettings& settings)
+	: Client(settings)
 {
 	registerHandler<s2c::ChatNotify>([this](const auto&, const s2c::ChatNotify& packet) {
 		handleChatNotify(packet);
@@ -16,12 +15,6 @@ ChatClient::ChatClient()
 	registerHandler<s2c::SetNicknameResult>([this](const auto&, const s2c::SetNicknameResult& packet) {
 		handleSetNicknameResult(packet);
 	});
-}
-
-bool ChatClient::onStart()
-{
-	tcpengine::setLogger(std::make_shared<tcpengine::ConsoleLogger>());
-	return true;
 }
 
 void ChatClient::onRun()
@@ -50,7 +43,7 @@ void ChatClient::onRun()
 	m_quitting = true;
 }
 
-void ChatClient::onDisconnected(const std::shared_ptr<tcpengine::Session>&)
+void ChatClient::onDisconnected(const std::shared_ptr<tcpengine::Connection>&)
 {
 	if (!m_quitting) {
 		std::cout << "Disconnected from server (press Enter to exit)\n" << std::flush;

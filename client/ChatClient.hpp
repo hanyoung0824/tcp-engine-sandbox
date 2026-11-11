@@ -11,14 +11,12 @@
 class ChatClient : public tcpengine::Client
 {
 public:
-	ChatClient();
+	explicit ChatClient(const tcpengine::ClientSettings& settings);
 
 protected:
-	bool onStart() override;
-
 	void onRun() override;
 
-	void onDisconnected(const std::shared_ptr<tcpengine::Session>& session) override;
+	void onDisconnected(const std::shared_ptr<tcpengine::Connection>& connection) override;
 
 private:
 	void handleChatNotify(const s2c::ChatNotify& packet);

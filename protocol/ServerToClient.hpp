@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Protocol.hpp"
-#include "tcpengine/network/packet/IPacket.hpp"
+#include "tcpengine/network/packet/Packet.hpp"
 #include "tcpengine/network/packet/PacketReader.hpp"
 #include "tcpengine/network/packet/PacketWriter.hpp"
 
@@ -12,7 +12,7 @@
 // read()는 믿을 수 없는 입력이므로 형식과 길이 검사 필수
 namespace s2c
 {
-class ChatNotify : public tcpengine::IPacket
+class ChatNotify : public tcpengine::Packet<PacketId::S2C_ChatNotify>
 {
 public:
 	ChatNotify() = default;
@@ -21,8 +21,6 @@ public:
 		message(std::move(message))
 	{
 	}
-
-	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::S2C_ChatNotify); }
 
 	bool read(tcpengine::PacketReader& reader) override
 	{
@@ -40,7 +38,7 @@ public:
 	std::string message;
 };
 
-class SetNicknameResult : public tcpengine::IPacket
+class SetNicknameResult : public tcpengine::Packet<PacketId::S2C_SetNicknameResult>
 {
 public:
 	SetNicknameResult() = default;
@@ -49,8 +47,6 @@ public:
 		nickname(std::move(nickname))
 	{
 	}
-
-	std::uint16_t getPacketId() const override { return static_cast<std::uint16_t>(PacketId::S2C_SetNicknameResult); }
 
 	bool read(tcpengine::PacketReader& reader) override
 	{

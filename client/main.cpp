@@ -1,9 +1,13 @@
 // 사용법: client [config]   (기본값: 실행 파일 옆의 client.json)
 
 #include "ChatClient.hpp"
+#include "tcpengine/client/ClientSettings.hpp"
+#include "tcpengine/utility/ConsoleSink.hpp"
 
+#include <exception>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 
 int main(int argc, char* argv[])
 {
@@ -11,7 +15,21 @@ int main(int argc, char* argv[])
 		? std::filesystem::path(argv[1])
 		: std::filesystem::path(argv[0]).parent_path() / "client.json";
 
-	const int result = ChatClient().run(configPath);
+	tcpengine::ClientSettings engineSettings;
+
+	// 응용 설정이 없으므로 엔진 설정만 읽음. 오류는 로거를 연결하기 전이라 직접 출력
+	try {
+		engineSettings = tcpengine::ClientSettings::create(configPath);
+	}
+	catch (const std::exception& e) {
+		std::cerr << e.what() << '\n';
+		return 1;
+	}
+
+	ChatClient client(engineSettings);
+	const int result = client.run(
+		std::make_shared<tcpengine::ConsoleSink>("engine"),
+		std::make_shared<tcpengine::ConsoleSink>("app"));
 	if (result == 0) {
 		std::cout << "Disconnected\n";
 	}

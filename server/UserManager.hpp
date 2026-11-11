@@ -1,8 +1,8 @@
 #pragma once
 
 #include "User.hpp"
-#include "tcpengine/network/Session.hpp"
-#include "tcpengine/network/packet/IPacket.hpp"
+#include "tcpengine/network/packet/Packet.hpp"
+#include "tcpengine/server/Session.hpp"
 
 #include <memory>
 #include <string>
@@ -17,7 +17,7 @@ public:
 	UserManager(const UserManager&) = delete;
 	UserManager& operator=(const UserManager&) = delete;
 
-	std::shared_ptr<User> add(const std::shared_ptr<tcpengine::Session>& session);
+	std::shared_ptr<User> add(const std::shared_ptr<tcpengine::Session>& session, std::string nickname);
 
 	void remove(tcpengine::Session::SessionId id);
 
@@ -25,7 +25,7 @@ public:
 
 	bool isNicknameTaken(const std::string& nickname) const;
 
-	void broadcast(const tcpengine::IPacket& packet, const User* except = nullptr);
+	void broadcast(const tcpengine::PacketBase& packet, const User* except = nullptr);
 
 private:
 	std::unordered_map<tcpengine::Session::SessionId, std::shared_ptr<User>> m_users;

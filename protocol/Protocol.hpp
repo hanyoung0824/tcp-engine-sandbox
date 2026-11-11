@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tcpengine/network/packet/IPacket.hpp"
+#include "tcpengine/network/packet/Packet.hpp"
 
 #include <cstddef>
 #include <cstdint>

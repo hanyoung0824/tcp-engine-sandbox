@@ -1,8 +1,10 @@
 #include "UserManager.hpp"
 
-std::shared_ptr<User> UserManager::add(const std::shared_ptr<tcpengine::Session>& session)
+#include <utility>
+
+std::shared_ptr<User> UserManager::add(const std::shared_ptr<tcpengine::Session>& session, std::string nickname)
 {
-	auto user = std::make_shared<User>(session);
+	auto user = std::make_shared<User>(session, std::move(nickname));
 	m_users[user->getId()] = user;
 	return user;
 }
@@ -21,22 +23,22 @@ std::shared_ptr<User> UserManager::find(tcpengine::Session::SessionId id) const
 bool UserManager::isNicknameTaken(const std::string& nickname) const
 {
 	for (const auto& [id, user] : m_users) {
-		if (user->isEntered() && user->getNickname() == nickname) {
+		if (user->getNickname() == nickname) {
 			return true;
 		}
 	}
 	return false;
 }
 
-void UserManager::broadcast(const tcpengine::IPacket& packet, const User* except)
+void UserManager::broadcast(const tcpengine::PacketBase& packet, const User* except)
 {
-	std::shared_ptr<const tcpengine::Session::Buffer> buffer = packet.serialize();
+	std::shared_ptr<const tcpengine::PacketBuffer> buffer = packet.serialize();
 	if (!buffer) {
 		return;
 	}
 
 	for (const auto& [id, user] : m_users) {
-		if (user->isEntered() && user.get() != except) {
+		if (user.get() != except) {
 			user->send(buffer);
 		}
 	}
