@@ -3,7 +3,8 @@
 		"transport": "tcp",
 		"port": 12345,
 		"heartbeat": { "interval": 10, "timeout": 30 },
-		"session": { "resumeTimeout": 30 }
+		"session": { "resumeTimeout": 30 },
+		"closeTimeout": 5
 	},
 	"app": {
 		"noticeSender": "Server"

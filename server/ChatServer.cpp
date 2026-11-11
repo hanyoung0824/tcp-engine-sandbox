@@ -4,9 +4,6 @@
 #include "tcpengine/network/Connection.hpp"
 #include "tcpengine/utility/Log.hpp"
 
-#include <iostream>
-#include <thread>
-
 ChatServer::ChatServer(const tcpengine::ServerSettings& engineSettings, const ChatServerSettings& settings)
 	: Server(engineSettings),
 	m_settings(settings)
@@ -21,7 +18,7 @@ ChatServer::ChatServer(const tcpengine::ServerSettings& engineSettings, const Ch
 
 void ChatServer::onStop()
 {
-	std::cout << "Server stopped\n";
+	tcpengine::logInfo("Server stopped");
 }
 
 void ChatServer::onSessionResumed(const std::shared_ptr<tcpengine::Session>& session)
@@ -56,7 +53,8 @@ void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, 
 		return;
 	}
 
-	std::cout << "[thread " << std::this_thread::get_id() << "] " << user->getNickname() << ": " << packet.message << '\n';
+	// 메시지마다 남기면 부하가 클 때 출력이 병목이 되므로 Debug
+	tcpengine::logDebug(user->getNickname(), ": ", packet.message);
 
 	m_users.broadcast(s2c::ChatNotify(user->getNickname(), packet.message));
 }
@@ -85,7 +83,7 @@ void ChatServer::handleSetNickname(const std::shared_ptr<tcpengine::Connection>&
 	}
 
 	std::shared_ptr<User> user = m_users.add(session, packet.nickname);
-	std::cout << connection->getAddress() << " entered as " << packet.nickname << '\n';
+	tcpengine::logInfo(connection->getAddress(), " entered as ", packet.nickname);
 
 	user->send(s2c::SetNicknameResult(NicknameResult::Ok, packet.nickname));
 	m_users.broadcast(s2c::ChatNotify(m_settings.noticeSender, packet.nickname + " joined"), user.get());
