@@ -1,7 +1,6 @@
 #include "ChatClient.hpp"
 
 #include "ClientToServer.hpp"
-#include "tcpengine/utility/Log.hpp"
 
 #include <iostream>
 #include <string>

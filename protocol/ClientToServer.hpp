@@ -5,7 +5,6 @@
 #include "tcpengine/network/packet/PacketReader.hpp"
 #include "tcpengine/network/packet/PacketWriter.hpp"
 
-#include <cstdint>
 #include <string>
 #include <utility>
 
