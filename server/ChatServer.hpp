@@ -20,7 +20,7 @@ protected:
 
 	void onSessionDetached(const std::shared_ptr<tcpengine::Session>& session) override;
 
-	void onSessionEnded(const std::shared_ptr<tcpengine::Session>& session) override;
+	void onSessionEnded(const std::shared_ptr<tcpengine::Session>& session, tcpengine::SessionEndReason reason) override;
 
 private:
 	void handleChat(const std::shared_ptr<tcpengine::Session>& session, const c2s::Chat& packet);

@@ -35,7 +35,7 @@ void ChatServer::onSessionDetached(const std::shared_ptr<tcpengine::Session>& se
 	}
 }
 
-void ChatServer::onSessionEnded(const std::shared_ptr<tcpengine::Session>& session)
+void ChatServer::onSessionEnded(const std::shared_ptr<tcpengine::Session>& session, tcpengine::SessionEndReason reason)
 {
 	std::shared_ptr<User> user = m_users.find(session->getId());
 	if (!user) {
@@ -43,7 +43,11 @@ void ChatServer::onSessionEnded(const std::shared_ptr<tcpengine::Session>& sessi
 	}
 
 	m_users.remove(user->getId());
-	m_users.broadcast(s2c::ChatNotify(m_settings.noticeSender, user->getNickname() + " left"));
+
+	// 서버 종료 때는 모두 나가므로 알릴 필요 없음. 알리면 사용자 수의 제곱만큼 패킷이 나감
+	if (reason != tcpengine::SessionEndReason::ServerStopped) {
+		m_users.broadcast(s2c::ChatNotify(m_settings.noticeSender, user->getNickname() + " left"));
+	}
 }
 
 void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, const c2s::Chat& packet)

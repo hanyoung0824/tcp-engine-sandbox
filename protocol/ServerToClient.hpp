@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-// read()는 믿을 수 없는 입력이므로 형식과 길이 검사 필수
+// 받은 값은 믿을 수 없으므로 validate()에서 값 규칙 검사 필수
 namespace s2c
 {
 class ChatNotify : public tcpengine::Packet<PacketId::S2C_ChatNotify>
@@ -24,7 +24,12 @@ public:
 
 	bool read(tcpengine::PacketReader& reader) override
 	{
-		return reader.readString(sender) && reader.readString(message) && message.size() <= maxChatMessageLength;
+		return reader.readString(sender) && reader.readString(message);
+	}
+
+	bool validate() const override
+	{
+		return message.size() <= maxChatMessageLength;
 	}
 
 	void write(tcpengine::PacketWriter& writer) const override
@@ -51,11 +56,16 @@ public:
 	bool read(tcpengine::PacketReader& reader) override
 	{
 		std::uint16_t value = 0;
-		if (!reader.readUInt16(value) || value > static_cast<std::uint16_t>(NicknameResult::AlreadySet)) {
+		if (!reader.readUInt16(value)) {
 			return false;
 		}
 		result = static_cast<NicknameResult>(value);
-		return reader.readString(nickname) && nickname.size() <= maxNicknameLength;
+		return reader.readString(nickname);
+	}
+
+	bool validate() const override
+	{
+		return result <= NicknameResult::AlreadySet && nickname.size() <= maxNicknameLength;
 	}
 
 	void write(tcpengine::PacketWriter& writer) const override

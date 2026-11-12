@@ -23,21 +23,23 @@ void ChatClient::onRun()
 
 	std::string line;
 	while (std::getline(std::cin, line) && !line.empty() && isConnected()) {
+		// 서버가 같은 validate()로 검사해 틀리면 연결을 끊으므로 보내기 전에 걸러 냄
 		if (!m_state.isEntered()) {
-			if (line.size() > maxNicknameLength) {
+			const c2s::SetNickname packet(line);
+			if (!packet.validate()) {
 				std::cerr << "Nickname too long (max " << maxNicknameLength << " bytes)\n";
 				continue;
 			}
-			send(c2s::SetNickname(line));
+			send(packet);
 			continue;
 		}
 
-		if (line.size() > maxChatMessageLength) {
+		const c2s::Chat packet(line);
+		if (!packet.validate()) {
 			std::cerr << "Message too long (max " << maxChatMessageLength << " bytes)\n";
 			continue;
 		}
-
-		send(c2s::Chat(line));
+		send(packet);
 	}
 
 	m_quitting = true;

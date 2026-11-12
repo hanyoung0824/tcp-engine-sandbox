@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-// read()는 믿을 수 없는 입력이므로 형식과 길이 검사 필수
+// 받은 값은 믿을 수 없으므로 validate()에서 값 규칙 검사 필수
 namespace c2s
 {
 class Chat : public tcpengine::Packet<PacketId::C2S_Chat>
@@ -23,7 +23,12 @@ public:
 
 	bool read(tcpengine::PacketReader& reader) override
 	{
-		return reader.readString(message) && message.size() <= maxChatMessageLength;
+		return reader.readString(message);
+	}
+
+	bool validate() const override
+	{
+		return message.size() <= maxChatMessageLength;
 	}
 
 	void write(tcpengine::PacketWriter& writer) const override
@@ -44,10 +49,15 @@ public:
 	{
 	}
 
-	// 너무 길면 조작된 패킷으로 보고 연결 끊음. 빈 닉네임과 중복은 결과 패킷으로 알림
 	bool read(tcpengine::PacketReader& reader) override
 	{
-		return reader.readString(nickname) && nickname.size() <= maxNicknameLength;
+		return reader.readString(nickname);
+	}
+
+	// 너무 길면 조작된 패킷으로 보고 연결 끊음. 빈 닉네임과 중복은 결과 패킷으로 알림
+	bool validate() const override
+	{
+		return nickname.size() <= maxNicknameLength;
 	}
 
 	void write(tcpengine::PacketWriter& writer) const override
