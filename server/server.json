@@ -8,5 +8,15 @@
 	},
 	"app": {
 		"noticeSender": "Server"
+	},
+	"log": {
+		"engine": {
+			"console": { "level": "info" },
+			"_file": { "level": "debug", "path": "logs/engine.log", "maxSizeMB": 10, "maxFiles": 5 }
+		},
+		"app": {
+			"console": { "level": "info" },
+			"_file": { "level": "debug", "path": "logs/app.log", "maxSizeMB": 10, "maxFiles": 5 }
+		}
 	}
 }

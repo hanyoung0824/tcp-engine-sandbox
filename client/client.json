@@ -5,5 +5,9 @@
 		"port": 12345,
 		"closeTimeout": 5
 	},
-	"app": {}
+	"app": {},
+	"log": {
+		"engine": { "console": { "level": "info" } },
+		"app": { "console": { "level": "info" } }
+	}
 }

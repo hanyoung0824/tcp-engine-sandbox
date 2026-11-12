@@ -2,12 +2,10 @@
 
 #include "ChatClient.hpp"
 #include "tcpengine/client/ClientSettings.hpp"
-#include "tcpengine/utility/ConsoleSink.hpp"
 
 #include <exception>
 #include <filesystem>
 #include <iostream>
-#include <memory>
 
 int main(int argc, char* argv[])
 {
@@ -17,7 +15,7 @@ int main(int argc, char* argv[])
 
 	tcpengine::ClientSettings engineSettings;
 
-	// 응용 설정이 없으므로 엔진 설정만 읽음. 오류는 로거를 연결하기 전이라 직접 출력
+	// 응용 설정이 없으므로 엔진 설정만 읽음. 오류는 로그를 시작하기 전이라 직접 출력
 	try {
 		engineSettings = tcpengine::ClientSettings::create(configPath);
 	}
@@ -27,9 +25,7 @@ int main(int argc, char* argv[])
 	}
 
 	ChatClient client(engineSettings);
-	const int result = client.run(
-		std::make_shared<tcpengine::ConsoleSink>("engine"),
-		std::make_shared<tcpengine::ConsoleSink>("app"));
+	const int result = client.run();
 	if (result == 0) {
 		std::cout << "Disconnected\n";
 	}
