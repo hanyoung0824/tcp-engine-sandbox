@@ -4,7 +4,8 @@
 		"port": 12345,
 		"heartbeat": { "interval": 10, "timeout": 30 },
 		"session": { "resumeTimeout": 30 },
-		"closeTimeout": 5
+		"closeTimeout": 5,
+		"sendQueueLimitKB": 1024
 	},
 	"app": {
 		"noticeSender": "Server"
