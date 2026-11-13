@@ -1,0 +1,24 @@
+{
+	"engine": {
+		"transport": "tcp",
+		"port": 12345,
+		"heartbeat": { "interval": 10, "timeout": 30 },
+		"session": { "resumeTimeout": 0 },
+		"closeTimeout": 5,
+		"sendQueueLimitKB": 1024,
+		"receiveLimit": { "packetsPerSecond": 1000 },
+		"statsIntervalSeconds": 1
+	},
+	"app": {
+		"noticeSender": "Server",
+		"chatLimit": { "messages": 1000, "perSeconds": 1 }
+	},
+	"log": {
+		"engine": {
+			"console": { "level": "info" }
+		},
+		"app": {
+			"console": { "level": "warning" }
+		}
+	}
+}

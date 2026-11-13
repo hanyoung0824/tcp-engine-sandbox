@@ -6,7 +6,8 @@
 		"session": { "resumeTimeout": 30 },
 		"closeTimeout": 5,
 		"sendQueueLimitKB": 1024,
-		"receiveLimit": { "packetsPerSecond": 100 }
+		"receiveLimit": { "packetsPerSecond": 100 },
+		"statsIntervalSeconds": 60
 	},
 	"app": {
 		"noticeSender": "Server",

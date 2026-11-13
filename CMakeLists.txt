@@ -17,6 +17,7 @@ add_subdirectory(${ENGINE_DIR} ${CMAKE_BINARY_DIR}/engine)
 
 option(BUILD_SERVER "Build the chat server" ON)
 option(BUILD_CLIENT "Build the chat client" ON)
+option(BUILD_LOADTEST "Build the load test client" ON)
 
 add_subdirectory(protocol)
 
@@ -26,4 +27,8 @@ endif()
 
 if(BUILD_CLIENT)
 	add_subdirectory(client)
+endif()
+
+if(BUILD_LOADTEST)
+	add_subdirectory(loadtest)
 endif()
