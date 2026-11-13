@@ -5,7 +5,7 @@
 #include "tcpengine/utility/Log.hpp"
 
 ChatServer::ChatServer(const tcpengine::ServerSettings& engineSettings, const ChatServerSettings& settings)
-	: Server(engineSettings),
+	: Server(engineSettings, protocolVersion),
 	m_settings(settings)
 {
 	registerHandler<c2s::Chat>([this](const auto& session, const c2s::Chat& packet) {

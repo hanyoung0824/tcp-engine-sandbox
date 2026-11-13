@@ -15,6 +15,8 @@ namespace
 	// 지연 시간 표본 상한 (4바이트씩이라 약 80MB)
 	constexpr std::size_t maxLatencySamples = 20'000'000;
 
+	constexpr std::chrono::seconds closeGracePeriod{ 3 };
+
 	double toMilliseconds(Clock::duration duration)
 	{
 		return std::chrono::duration<double, std::milli>(duration).count();
@@ -111,6 +113,14 @@ void LoadTest::onBotFailed(const std::string& name, const std::string& reason)
 	}
 }
 
+void LoadTest::onBotClosed()
+{
+	++m_closed;
+	if (m_phase == Phase::Finished && m_closed == static_cast<int>(m_bots.size())) {
+		m_deadline.cancel();
+	}
+}
+
 void LoadTest::startChatting()
 {
 	m_phase = Phase::Chatting;
@@ -132,10 +142,24 @@ void LoadTest::finish(const std::string& reason)
 	}
 	m_phase = Phase::Finished;
 	m_finishReason = reason;
-	m_deadline.cancel();
 	for (const std::shared_ptr<Bot>& bot : m_bots) {
-		bot->close();
+		bot->shutdown();
 	}
+	if (m_closed == static_cast<int>(m_bots.size())) {
+		m_deadline.cancel();
+		return;
+	}
+
+	// 서버가 닫아 주지 않는 봇은 잠시 뒤 직접 닫음
+	m_deadline.expires_after(closeGracePeriod);
+	m_deadline.async_wait([this](const boost::system::error_code& ec) {
+		if (ec) {
+			return;
+		}
+		for (const std::shared_ptr<Bot>& bot : m_bots) {
+			bot->close();
+		}
+	});
 }
 
 int LoadTest::report() const

@@ -7,7 +7,9 @@
 		"closeTimeout": 5,
 		"sendQueueLimitKB": 1024,
 		"receiveLimit": { "packetsPerSecond": 1000 },
-		"statsIntervalSeconds": 1
+		"statsIntervalSeconds": 1,
+		"loginTimeoutSeconds": 30,
+		"maxConnections": 10000
 	},
 	"app": {
 		"noticeSender": "Server",

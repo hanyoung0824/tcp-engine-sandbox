@@ -21,6 +21,8 @@ namespace
 	constexpr std::uint16_t controlPacketId = 0;
 	constexpr std::uint16_t serverHelloType = 1;
 	constexpr std::uint16_t pingType = 2;
+	constexpr std::uint16_t clientHelloType = 8;
+	constexpr std::uint16_t engineProtocolVersion = 1;
 
 	constexpr std::size_t headerSize = 4;
 	constexpr std::size_t readBufferSize = 64 * 1024;
@@ -31,6 +33,16 @@ namespace
 		std::ostringstream name;
 		name << botPrefix << std::setw(4) << std::setfill('0') << index;
 		return name.str();
+	}
+
+	// 접속 직후 가장 먼저 보내는 버전 알림
+	std::shared_ptr<const tcpengine::PacketBuffer> makeClientHelloPacket()
+	{
+		tcpengine::PacketWriter writer(controlPacketId);
+		writer.writeUInt16(clientHelloType);
+		writer.writeUInt16(engineProtocolVersion);
+		writer.writeUInt16(protocolVersion);
+		return std::make_shared<const tcpengine::PacketBuffer>(*writer.finish());
 	}
 
 	std::shared_ptr<const tcpengine::PacketBuffer> makePingPacket()
@@ -80,6 +92,7 @@ void Bot::connect(const tcp::endpoint& endPoint)
 		boost::system::error_code ignored;
 		self->m_socket.set_option(tcp::no_delay(true), ignored);
 
+		self->send(makeClientHelloPacket());
 		self->send(c2s::SetNickname(self->m_name).serialize());
 		self->startRead();
 	});
@@ -91,13 +104,31 @@ void Bot::startChatting(std::chrono::milliseconds firstDelay)
 	scheduleChat();
 }
 
+void Bot::shutdown()
+{
+	if (m_state != State::Connected) {
+		close();
+		return;
+	}
+	// 받지 않은 데이터가 남은 채 닫으면 RST가 나가 서버에 읽기 오류로 남음. FIN을 보내고 서버가 닫을 때까지 받아서 버림
+	m_state = State::Closing;
+	m_chatTimer.cancel();
+	m_pingTimer.cancel();
+	boost::system::error_code ignored;
+	m_socket.shutdown(tcp::socket::shutdown_send, ignored);
+}
+
 void Bot::close()
 {
+	if (m_state == State::Closed) {
+		return;
+	}
 	m_state = State::Closed;
 	m_chatTimer.cancel();
 	m_pingTimer.cancel();
 	boost::system::error_code ignored;
 	m_socket.close(ignored);
+	m_test.onBotClosed();
 }
 
 void Bot::send(std::shared_ptr<const tcpengine::PacketBuffer> data)
@@ -141,6 +172,15 @@ void Bot::startRead()
 void Bot::onRead(const boost::system::error_code& ec, std::size_t length)
 {
 	if (m_state == State::Closed) {
+		return;
+	}
+	if (m_state == State::Closing) {
+		if (ec) {
+			close();
+			return;
+		}
+		m_readLength = 0;
+		startRead();
 		return;
 	}
 	if (ec) {
@@ -303,6 +343,10 @@ void Bot::fail(const std::string& reason)
 	if (m_state == State::Closed) {
 		return;
 	}
+	// 끝내는 중의 오류는 결과와 상관없으므로 알리지 않음
+	const bool closing = m_state == State::Closing;
 	close();
-	m_test.onBotFailed(m_name, reason);
+	if (!closing) {
+		m_test.onBotFailed(m_name, reason);
+	}
 }

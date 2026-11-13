@@ -3,7 +3,9 @@
 		"transport": "tcp",
 		"host": "127.0.0.1",
 		"port": 12345,
-		"closeTimeout": 5
+		"closeTimeout": 5,
+		"connectTimeoutSeconds": 5,
+		"reconnectMaxDelaySeconds": 30
 	},
 	"app": {},
 	"log": {

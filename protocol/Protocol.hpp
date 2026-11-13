@@ -13,6 +13,9 @@ enum class PacketId : std::uint16_t
 	S2C_SetNicknameResult,
 };
 
+// 패킷 형식이나 의미를 바꾸면 올림. 서버와 클라이언트가 다르면 서버가 접속 직후 끊음
+constexpr std::uint16_t protocolVersion = 1;
+
 constexpr std::size_t maxChatMessageLength = 1024;
 
 constexpr std::size_t maxNicknameLength = 16;

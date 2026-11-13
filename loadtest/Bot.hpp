@@ -33,6 +33,9 @@ public:
 	// firstDelay 뒤부터 interval마다 채팅을 보냄. 봇마다 시작을 어긋나게 해서 한꺼번에 몰리지 않게 함
 	void startChatting(std::chrono::milliseconds firstDelay);
 
+	// 서버에 FIN을 보내고 서버가 닫기를 기다림. 그동안 받은 것은 버림
+	void shutdown();
+
 	void close();
 
 	const std::string& getName() const { return m_name; }
@@ -42,6 +45,7 @@ private:
 	{
 		Connecting,
 		Connected,
+		Closing,
 		Closed,
 	};
 

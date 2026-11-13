@@ -18,22 +18,16 @@ void ChatServerSettings::validate() const
 
 ChatServerSettings ChatServerSettings::fromJson(const nlohmann::json& file)
 {
-	ChatServerSettings settings;
-	const auto app = file.find("app");
-	if (app == file.end()) {
-		return settings;
-	}
-
 	try {
-		settings.noticeSender = app->value("noticeSender", settings.noticeSender);
-		if (const auto chatLimit = app->find("chatLimit"); chatLimit != app->end()) {
-			settings.chatLimit.messages = chatLimit->at("messages").get<double>();
-			settings.chatLimit.perSeconds = chatLimit->at("perSeconds").get<double>();
-		}
+		const nlohmann::json& app = file.at("app");
+		ChatServerSettings settings;
+		settings.noticeSender = app.at("noticeSender").get<std::string>();
+		settings.chatLimit.messages = app.at("chatLimit").at("messages").get<double>();
+		settings.chatLimit.perSeconds = app.at("chatLimit").at("perSeconds").get<double>();
 		settings.validate();
+		return settings;
 	}
 	catch (const std::exception& e) {
 		throw std::runtime_error(std::string("invalid app settings: ") + e.what());
 	}
-	return settings;
 }

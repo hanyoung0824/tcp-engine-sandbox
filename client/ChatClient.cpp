@@ -6,7 +6,7 @@
 #include <string>
 
 ChatClient::ChatClient(const tcpengine::ClientSettings& settings)
-	: Client(settings)
+	: Client(settings, protocolVersion)
 {
 	registerHandler<s2c::ChatNotify>([this](const auto&, const s2c::ChatNotify& packet) {
 		handleChatNotify(packet);
@@ -21,7 +21,12 @@ void ChatClient::onRun()
 	std::cout << "Connected. Enter your nickname (empty line to quit):\n";
 
 	std::string line;
-	while (std::getline(std::cin, line) && !line.empty() && isConnected()) {
+	while (std::getline(std::cin, line) && !line.empty()) {
+		if (!isConnected()) {
+			std::cerr << "Not connected\n";
+			continue;
+		}
+
 		// 서버가 같은 validate()로 검사해 틀리면 연결을 끊으므로 보내기 전에 걸러 냄
 		if (!m_state.isEntered()) {
 			const c2s::SetNickname packet(line);
@@ -44,11 +49,27 @@ void ChatClient::onRun()
 	m_quitting = true;
 }
 
-void ChatClient::onDisconnected(const std::shared_ptr<tcpengine::Connection>&)
+void ChatClient::onDisconnected(const std::shared_ptr<tcpengine::Connection>&, const tcpengine::DisconnectInfo& info)
 {
-	if (!m_quitting) {
-		std::cout << "Disconnected from server (press Enter to exit)\n" << std::flush;
+	if (m_quitting) {
+		return;
 	}
+	std::cout << "Disconnected from server";
+	if (info.reason) {
+		std::cout << " (" << tcpengine::toString(*info.reason) << ')';
+	}
+	std::cout << (info.reconnecting ? ", reconnecting...\n" : ", press Enter to exit\n") << std::flush;
+}
+
+void ChatClient::onSessionResumed()
+{
+	std::cout << "Reconnected\n" << std::flush;
+}
+
+void ChatClient::onSessionLost()
+{
+	m_state.clear();
+	std::cout << "Reconnected, but the session has ended. Enter your nickname:\n" << std::flush;
 }
 
 void ChatClient::handleChatNotify(const s2c::ChatNotify& packet)

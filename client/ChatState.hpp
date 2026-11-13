@@ -16,6 +16,9 @@ public:
 
 	bool isEntered() const;
 
+	// 세션을 잃어 다시 로그인해야 함
+	void clear();
+
 private:
 	mutable std::mutex m_mutex;
 	std::string m_nickname;

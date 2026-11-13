@@ -4,6 +4,8 @@ project(tcp_engine_sandbox LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+enable_testing()
+
 if(MSVC)
 	add_compile_options(/utf-8)
 endif()
@@ -18,6 +20,7 @@ add_subdirectory(${ENGINE_DIR} ${CMAKE_BINARY_DIR}/engine)
 option(BUILD_SERVER "Build the chat server" ON)
 option(BUILD_CLIENT "Build the chat client" ON)
 option(BUILD_LOADTEST "Build the load test client" ON)
+option(BUILD_TESTS "Register server scenario tests (needs Python 3)" ON)
 
 add_subdirectory(protocol)
 
@@ -31,4 +34,8 @@ endif()
 
 if(BUILD_LOADTEST)
 	add_subdirectory(loadtest)
+endif()
+
+if(BUILD_TESTS)
+	add_subdirectory(tests)
 endif()

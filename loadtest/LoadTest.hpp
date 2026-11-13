@@ -46,6 +46,9 @@ public:
 
 	void onBotFailed(const std::string& name, const std::string& reason);
 
+	// 봇이 닫힐 때마다 한 번. 끝내는 중에 모두 닫히면 기다리던 타이머를 거둠
+	void onBotClosed();
+
 private:
 	void startChatting();
 
@@ -61,6 +64,7 @@ private:
 
 	int m_loggedIn = 0;
 	int m_failed = 0;
+	int m_closed = 0;
 	std::uint64_t m_rateLimited = 0;
 	const std::uint64_t m_expected;
 	std::uint64_t m_received = 0;
