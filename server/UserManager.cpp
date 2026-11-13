@@ -2,9 +2,9 @@
 
 #include <utility>
 
-std::shared_ptr<User> UserManager::add(const std::shared_ptr<tcpengine::Session>& session, std::string nickname)
+std::shared_ptr<User> UserManager::add(const std::shared_ptr<tcpengine::Session>& session, std::string nickname, tcpengine::TokenBucket chatLimit)
 {
-	auto user = std::make_shared<User>(session, std::move(nickname));
+	auto user = std::make_shared<User>(session, std::move(nickname), chatLimit);
 	m_users[user->getId()] = user;
 	return user;
 }

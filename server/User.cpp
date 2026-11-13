@@ -2,9 +2,10 @@
 
 #include <utility>
 
-User::User(std::shared_ptr<tcpengine::Session> session, std::string nickname)
+User::User(std::shared_ptr<tcpengine::Session> session, std::string nickname, tcpengine::TokenBucket chatLimit)
 	: m_session(std::move(session)),
-	m_nickname(std::move(nickname))
+	m_nickname(std::move(nickname)),
+	m_chatLimit(chatLimit)
 {
 }
 

@@ -57,6 +57,12 @@ void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session>& session, 
 		return;
 	}
 
+	// 한 사람의 채팅이 모두에게 퍼지므로 너무 빠르면 퍼뜨리지 않고 본인에게만 알림
+	if (!user->tryChat()) {
+		user->send(s2c::ChatNotify(m_settings.noticeSender, "You are sending messages too fast"));
+		return;
+	}
+
 	// 메시지마다 남기면 부하가 클 때 출력이 병목이 되므로 Debug
 	tcpengine::logDebug(user->getNickname(), ": ", packet.message);
 
@@ -86,7 +92,9 @@ void ChatServer::handleSetNickname(const std::shared_ptr<tcpengine::Connection>&
 		return;
 	}
 
-	std::shared_ptr<User> user = m_users.add(session, packet.nickname);
+	const ChatLimitSettings& chatLimit = m_settings.chatLimit;
+	std::shared_ptr<User> user = m_users.add(session, packet.nickname,
+		tcpengine::TokenBucket(chatLimit.messages / chatLimit.perSeconds, chatLimit.messages));
 	tcpengine::logInfo(connection->getAddress(), " entered as ", packet.nickname);
 
 	user->send(s2c::SetNicknameResult(NicknameResult::Ok, packet.nickname));

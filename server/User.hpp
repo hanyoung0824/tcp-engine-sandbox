@@ -2,6 +2,7 @@
 
 #include "tcpengine/network/packet/Packet.hpp"
 #include "tcpengine/server/Session.hpp"
+#include "tcpengine/utility/TokenBucket.hpp"
 
 #include <memory>
 #include <string>
@@ -10,7 +11,7 @@
 class User
 {
 public:
-	User(std::shared_ptr<tcpengine::Session> session, std::string nickname);
+	User(std::shared_ptr<tcpengine::Session> session, std::string nickname, tcpengine::TokenBucket chatLimit);
 
 	tcpengine::Session::SessionId getId() const { return m_session->getId(); }
 
@@ -20,7 +21,11 @@ public:
 
 	void send(std::shared_ptr<const tcpengine::PacketBuffer> buffer);
 
+	// 채팅 한 번을 보내도 되는지. 너무 빠르면 false
+	bool tryChat() { return m_chatLimit.tryTake(); }
+
 private:
 	std::shared_ptr<tcpengine::Session> m_session;
 	const std::string m_nickname;
+	tcpengine::TokenBucket m_chatLimit;
 };

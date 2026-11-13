@@ -17,7 +17,7 @@ public:
 	UserManager(const UserManager&) = delete;
 	UserManager& operator=(const UserManager&) = delete;
 
-	std::shared_ptr<User> add(const std::shared_ptr<tcpengine::Session>& session, std::string nickname);
+	std::shared_ptr<User> add(const std::shared_ptr<tcpengine::Session>& session, std::string nickname, tcpengine::TokenBucket chatLimit);
 
 	void remove(tcpengine::Session::SessionId id);
 

@@ -5,10 +5,12 @@
 		"heartbeat": { "interval": 10, "timeout": 30 },
 		"session": { "resumeTimeout": 30 },
 		"closeTimeout": 5,
-		"sendQueueLimitKB": 1024
+		"sendQueueLimitKB": 1024,
+		"receiveLimit": { "packetsPerSecond": 100 }
 	},
 	"app": {
-		"noticeSender": "Server"
+		"noticeSender": "Server",
+		"chatLimit": { "messages": 5, "perSeconds": 3 }
 	},
 	"log": {
 		"engine": {
