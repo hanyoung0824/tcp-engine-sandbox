@@ -20,6 +20,8 @@ import tempfile
 import threading
 import time
 
+# 통신 형식을 그대로 베낀 값. 테스트는 프로토콜을 직접 다루므로 C++ 헤더를 쓰지 않음
+# 앱 protocol/Protocol.hpp, 엔진 src/network/PacketHeader.hpp와 include/tcpengine/network/DisconnectReason.hpp가 바뀌면 함께 고침
 CHAT, CHAT_NOTIFY, SET_NICKNAME, SET_NICKNAME_RESULT = 1, 2, 3, 4
 CONTROL_PACKET_ID, PING, CLIENT_HELLO, DISCONNECT, LOGOUT = 0, 2, 8, 9, 10
 ENGINE_PROTOCOL_VERSION, APP_PROTOCOL_VERSION = 1, 1

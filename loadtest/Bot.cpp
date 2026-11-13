@@ -17,7 +17,8 @@ using Clock = std::chrono::steady_clock;
 
 namespace
 {
-	// 엔진 제어 패킷 (엔진 PacketHeader.hpp와 맞춤)
+	// 엔진 통신 형식을 그대로 베낀 값. 봇은 프로토콜을 직접 다루므로 엔진 내부 헤더를 쓰지 않음
+	// 엔진의 src/network/PacketHeader.hpp(제어 패킷 종류, engineProtocolVersion)가 바뀌면 함께 고침
 	constexpr std::uint16_t controlPacketId = 0;
 	constexpr std::uint16_t serverHelloType = 1;
 	constexpr std::uint16_t pingType = 2;
