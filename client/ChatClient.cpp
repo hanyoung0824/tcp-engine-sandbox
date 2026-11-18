@@ -58,7 +58,7 @@ void ChatClient::onDisconnected(const std::shared_ptr<tcpengine::Connection>&, c
 	if (info.reason) {
 		std::cout << " (" << tcpengine::toString(*info.reason) << ')';
 	}
-	std::cout << (info.reconnecting ? ", reconnecting...\n" : ", press Enter to exit\n") << std::flush;
+	std::cout << (info.willReconnect ? ", reconnecting...\n" : ", press Enter to exit\n") << std::flush;
 }
 
 void ChatClient::onSessionResumed()

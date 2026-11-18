@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 
 	// 응용 설정이 없으므로 엔진 설정만 읽음. 오류는 로그를 시작하기 전이라 직접 출력
 	try {
-		engineSettings = tcpengine::ClientSettings::create(configPath);
+		engineSettings = tcpengine::ClientSettings::fromFile(configPath);
 	}
 	catch (const std::exception& e) {
 		std::cerr << e.what() << '\n';
