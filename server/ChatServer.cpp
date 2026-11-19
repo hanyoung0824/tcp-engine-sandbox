@@ -36,6 +36,7 @@ void ChatServer::onSessionDetached(const std::shared_ptr<tcpengine::Session> &se
 void ChatServer::onSessionEnded(const std::shared_ptr<tcpengine::Session> &session, tcpengine::SessionEndReason reason)
 {
     std::shared_ptr<User> user = m_users.find(session->getId());
+
     if (!user)
     {
         return;
@@ -53,6 +54,7 @@ void ChatServer::onSessionEnded(const std::shared_ptr<tcpengine::Session> &sessi
 void ChatServer::handleChat(const std::shared_ptr<tcpengine::Session> &session, const c2s::Chat &packet)
 {
     std::shared_ptr<User> user = m_users.find(session->getId());
+
     if (!user)
     {
         return;
@@ -75,6 +77,7 @@ void ChatServer::handleSetNickname(const std::shared_ptr<tcpengine::Connection> 
                                    const c2s::SetNickname &packet)
 {
     NicknameResult result = NicknameResult::Ok;
+
     if (findSession(connection))
     {
         result = NicknameResult::AlreadySet;
@@ -95,6 +98,7 @@ void ChatServer::handleSetNickname(const std::shared_ptr<tcpengine::Connection> 
     }
 
     std::shared_ptr<tcpengine::Session> session = startSession(connection);
+
     if (!session)
     {
         return;

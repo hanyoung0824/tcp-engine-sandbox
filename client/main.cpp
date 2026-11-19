@@ -27,9 +27,11 @@ int main(int argc, char *argv[])
 
     ChatClient client(engineSettings);
     const int result = client.run();
+
     if (result == 0)
     {
         std::cout << "Disconnected\n";
     }
+
     return result;
 }

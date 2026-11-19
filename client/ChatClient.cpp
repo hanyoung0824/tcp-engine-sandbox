@@ -33,6 +33,7 @@ void ChatClient::onUpdate()
             quit();
             return;
         }
+
         handleInputLine(line);
     }
 }
@@ -43,6 +44,7 @@ void ChatClient::onConnected()
     {
         return;
     }
+
     std::cout << "Connected. Enter your nickname (empty line to quit):\n" << std::flush;
     m_inputThread = std::thread([this] { readInput(); });
 }
@@ -50,6 +52,7 @@ void ChatClient::onConnected()
 void ChatClient::readInput()
 {
     std::string line;
+
     while (std::getline(std::cin, line))
     {
         const bool done = line.empty();
@@ -57,11 +60,13 @@ void ChatClient::readInput()
             const std::lock_guard lock(m_inputMutex);
             m_inputLines.push_back(std::move(line));
         }
+
         if (done)
         {
             return;
         }
     }
+
     const std::lock_guard lock(m_inputMutex);
     m_inputLines.emplace_back();
 }
@@ -87,21 +92,25 @@ void ChatClient::handleInputLine(const std::string &line)
     if (!m_state.isEntered())
     {
         const c2s::SetNickname packet(line);
+
         if (!packet.validate())
         {
             std::cerr << "Nickname too long (max " << maxNicknameLength << " bytes)\n";
             return;
         }
+
         send(packet);
         return;
     }
 
     const c2s::Chat packet(line);
+
     if (!packet.validate())
     {
         std::cerr << "Message too long (max " << maxChatMessageLength << " bytes)\n";
         return;
     }
+
     send(packet);
 }
 
@@ -111,11 +120,14 @@ void ChatClient::onDisconnected(const tcpengine::DisconnectInfo &info)
     {
         return;
     }
+
     std::cout << "Disconnected from server";
+
     if (info.reason)
     {
         std::cout << " (" << tcpengine::toString(*info.reason) << ')';
     }
+
     std::cout << (info.willReconnect ? ", reconnecting...\n" : ", press Enter to exit\n") << std::flush;
 }
 
@@ -139,19 +151,20 @@ void ChatClient::handleSetNicknameResult(const s2c::SetNicknameResult &packet)
 {
     switch (packet.result)
     {
-    case NicknameResult::Ok:
-        m_state.setNickname(packet.nickname);
-        std::cout << "Entered the chat as " << packet.nickname << " (empty line to quit)\n" << std::flush;
-        return;
-    case NicknameResult::Empty:
-        std::cout << "Nickname is empty.";
-        break;
-    case NicknameResult::Duplicate:
-        std::cout << "Nickname is already in use.";
-        break;
-    case NicknameResult::AlreadySet:
-        std::cout << "Nickname is already set.\n" << std::flush;
-        return;
+        case NicknameResult::Ok:
+            m_state.setNickname(packet.nickname);
+            std::cout << "Entered the chat as " << packet.nickname << " (empty line to quit)\n" << std::flush;
+            return;
+        case NicknameResult::Empty:
+            std::cout << "Nickname is empty.";
+            break;
+        case NicknameResult::Duplicate:
+            std::cout << "Nickname is already in use.";
+            break;
+        case NicknameResult::AlreadySet:
+            std::cout << "Nickname is already set.\n" << std::flush;
+            return;
     }
+
     std::cout << " Enter another nickname:\n" << std::flush;
 }

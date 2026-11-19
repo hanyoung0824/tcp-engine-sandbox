@@ -30,12 +30,14 @@ bool UserManager::isNicknameTaken(const std::string &nickname) const
             return true;
         }
     }
+
     return false;
 }
 
 void UserManager::broadcast(const tcpengine::PacketBase &packet, const User *except)
 {
     std::shared_ptr<const tcpengine::PacketBuffer> buffer = packet.serialize();
+
     if (!buffer)
     {
         return;

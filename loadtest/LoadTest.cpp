@@ -12,15 +12,15 @@ using Clock = std::chrono::steady_clock;
 
 namespace
 {
-// 지연 시간 표본 상한 (4바이트씩이라 약 80MB)
-constexpr std::size_t maxLatencySamples = 20'000'000;
+    // 지연 시간 표본 상한 (4바이트씩이라 약 80MB)
+    constexpr std::size_t maxLatencySamples = 20'000'000;
 
-constexpr std::chrono::seconds closeGracePeriod{3};
+    constexpr std::chrono::seconds closeGracePeriod{3};
 
-double toMilliseconds(Clock::duration duration)
-{
-    return std::chrono::duration<double, std::milli>(duration).count();
-}
+    double toMilliseconds(Clock::duration duration)
+    {
+        return std::chrono::duration<double, std::milli>(duration).count();
+    }
 } // namespace
 
 LoadTest::LoadTest(const LoadTestOptions &options)
@@ -36,11 +36,13 @@ int LoadTest::run()
 {
     boost::system::error_code ec;
     const asio::ip::address address = asio::ip::make_address(m_options.host, ec);
+
     if (ec)
     {
         std::cerr << "invalid host " << m_options.host << ": " << ec.message() << '\n';
         return 2;
     }
+
     const tcp::endpoint endPoint(address, m_options.port);
 
     std::cout << "clients " << m_options.clients << ", " << m_options.messages << " chats each every "
@@ -48,6 +50,7 @@ int LoadTest::run()
               << std::flush;
 
     m_startTime = Clock::now();
+
     for (int i = 0; i < m_options.clients; ++i)
     {
         auto bot = std::make_shared<Bot>(*this, m_ioContext, i);
@@ -70,6 +73,7 @@ int LoadTest::run()
 void LoadTest::onLoggedIn()
 {
     ++m_loggedIn;
+
     if (m_loggedIn == m_options.clients)
     {
         startChatting();
@@ -84,15 +88,18 @@ void LoadTest::onChatReceived(std::chrono::nanoseconds latency, bool inOrder)
     }
 
     ++m_received;
+
     if (!inOrder)
     {
         ++m_reordered;
     }
+
     if (m_latencies.size() < maxLatencySamples)
     {
         const auto micros = std::chrono::duration_cast<std::chrono::microseconds>(latency).count();
         m_latencies.push_back(static_cast<std::uint32_t>(std::max<std::int64_t>(micros, 0)));
     }
+
     m_lastReceiveTime = Clock::now();
 
     if (m_received == m_expected)
@@ -112,12 +119,15 @@ void LoadTest::onBotFailed(const std::string &name, const std::string &reason)
     {
         return;
     }
+
     ++m_failed;
+
     // 실패가 많을 때 화면을 덮지 않도록 앞의 몇 개만 출력
     if (m_failed <= 5)
     {
         std::cerr << name << " failed: " << reason << '\n';
     }
+
     if (m_failed == m_options.clients)
     {
         finish("all bots failed");
@@ -127,6 +137,7 @@ void LoadTest::onBotFailed(const std::string &name, const std::string &reason)
 void LoadTest::onBotClosed()
 {
     ++m_closed;
+
     if (m_phase == Phase::Finished && m_closed == static_cast<int>(m_bots.size()))
     {
         m_deadline.cancel();
@@ -143,6 +154,7 @@ void LoadTest::startChatting()
               << std::flush;
 
     const auto clients = static_cast<long long>(m_bots.size());
+
     for (long long i = 0; i < clients; ++i)
     {
         m_bots[static_cast<std::size_t>(i)]->startChatting(m_options.interval * i / clients);
@@ -155,12 +167,15 @@ void LoadTest::finish(const std::string &reason)
     {
         return;
     }
+
     m_phase = Phase::Finished;
     m_finishReason = reason;
+
     for (const std::shared_ptr<Bot> &bot : m_bots)
     {
         bot->shutdown();
     }
+
     if (m_closed == static_cast<int>(m_bots.size()))
     {
         m_deadline.cancel();
@@ -174,6 +189,7 @@ void LoadTest::finish(const std::string &reason)
         {
             return;
         }
+
         for (const std::shared_ptr<Bot> &bot : m_bots)
         {
             bot->close();
@@ -190,6 +206,7 @@ int LoadTest::report() const
         {
             return 0.0;
         }
+
         const auto index = static_cast<std::size_t>(ratio * static_cast<double>(latencies.size() - 1));
         return latencies[index] / 1000.0;
     };
@@ -201,11 +218,13 @@ int LoadTest::report() const
               << "logged in: " << m_loggedIn << '/' << m_options.clients << ", failed bots: " << m_failed << '\n'
               << "deliveries: " << m_received << '/' << m_expected << " (missing " << missing << ", reordered "
               << m_reordered << ", rate limited " << m_rateLimited << ")\n";
+
     if (seconds > 0)
     {
         std::cout << "throughput: " << static_cast<double>(m_received) / seconds << " deliveries/s over " << seconds
                   << "s\n";
     }
+
     std::cout << "latency ms: p50 " << percentile(0.50) << ", p99 " << percentile(0.99) << ", max " << percentile(1.0)
               << '\n';
 

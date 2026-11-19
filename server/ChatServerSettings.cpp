@@ -12,6 +12,7 @@ void ChatServerSettings::validate() const
     {
         throw std::invalid_argument("noticeSender must not be empty");
     }
+
     if (chatLimit.messages <= 0 || chatLimit.perSeconds <= 0)
     {
         throw std::invalid_argument("chatLimit messages and perSeconds must be positive");
