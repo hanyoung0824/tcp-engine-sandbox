@@ -9,26 +9,27 @@
 #include <filesystem>
 #include <iostream>
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	const std::filesystem::path configPath = argc > 1
-		? std::filesystem::path(argv[1])
-		: std::filesystem::path(argv[0]).parent_path() / "server.json";
+    const std::filesystem::path configPath =
+        argc > 1 ? std::filesystem::path(argv[1]) : std::filesystem::path(argv[0]).parent_path() / "server.json";
 
-	tcpengine::ServerSettings engineSettings;
-	ChatServerSettings chatSettings;
+    tcpengine::ServerSettings engineSettings;
+    ChatServerSettings chatSettings;
 
-	// 설정을 읽는 동안의 오류는 로그를 시작하기 전이라 직접 출력
-	try {
-		const nlohmann::json file = tcpengine::loadJsonFile(configPath);
-		engineSettings = tcpengine::ServerSettings::fromJson(file);
-		chatSettings = ChatServerSettings::fromJson(file);
-	}
-	catch (const std::exception& e) {
-		std::cerr << configPath.string() << ": " << e.what() << '\n';
-		return 1;
-	}
+    // 설정을 읽는 동안의 오류는 로그를 시작하기 전이라 직접 출력
+    try
+    {
+        const nlohmann::json file = tcpengine::loadJsonFile(configPath);
+        engineSettings = tcpengine::ServerSettings::fromJson(file);
+        chatSettings = ChatServerSettings::fromJson(file);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << configPath.string() << ": " << e.what() << '\n';
+        return 1;
+    }
 
-	ChatServer server(engineSettings, chatSettings);
-	return server.run();
+    ChatServer server(engineSettings, chatSettings);
+    return server.run();
 }

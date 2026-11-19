@@ -13,58 +13,56 @@ namespace c2s
 {
 class Chat : public tcpengine::Packet<PacketId::C2S_Chat>
 {
-public:
-	Chat() = default;
-	explicit Chat(std::string message)
-		: message(std::move(message))
-	{
-	}
+  public:
+    Chat() = default;
+    explicit Chat(std::string message) : message(std::move(message))
+    {
+    }
 
-	bool read(tcpengine::PacketReader& reader) override
-	{
-		return reader.readString(message);
-	}
+    bool read(tcpengine::PacketReader &reader) override
+    {
+        return reader.readString(message);
+    }
 
-	bool validate() const override
-	{
-		return message.size() <= maxChatMessageLength;
-	}
+    bool validate() const override
+    {
+        return message.size() <= maxChatMessageLength;
+    }
 
-	void write(tcpengine::PacketWriter& writer) const override
-	{
-		writer.writeString(message);
-	}
+    void write(tcpengine::PacketWriter &writer) const override
+    {
+        writer.writeString(message);
+    }
 
-public:
-	std::string message;
+  public:
+    std::string message;
 };
 
 class SetNickname : public tcpengine::Packet<PacketId::C2S_SetNickname>
 {
-public:
-	SetNickname() = default;
-	explicit SetNickname(std::string nickname)
-		: nickname(std::move(nickname))
-	{
-	}
+  public:
+    SetNickname() = default;
+    explicit SetNickname(std::string nickname) : nickname(std::move(nickname))
+    {
+    }
 
-	bool read(tcpengine::PacketReader& reader) override
-	{
-		return reader.readString(nickname);
-	}
+    bool read(tcpengine::PacketReader &reader) override
+    {
+        return reader.readString(nickname);
+    }
 
-	// 너무 길면 조작된 패킷으로 보고 연결 끊음. 빈 닉네임과 중복은 결과 패킷으로 알림
-	bool validate() const override
-	{
-		return nickname.size() <= maxNicknameLength;
-	}
+    // 너무 길면 조작된 패킷으로 보고 연결 끊음. 빈 닉네임과 중복은 결과 패킷으로 알림
+    bool validate() const override
+    {
+        return nickname.size() <= maxNicknameLength;
+    }
 
-	void write(tcpengine::PacketWriter& writer) const override
-	{
-		writer.writeString(nickname);
-	}
+    void write(tcpengine::PacketWriter &writer) const override
+    {
+        writer.writeString(nickname);
+    }
 
-public:
-	std::string nickname;
+  public:
+    std::string nickname;
 };
-}
+} // namespace c2s
