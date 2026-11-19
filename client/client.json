@@ -5,7 +5,8 @@
 		"port": 12345,
 		"closeTimeout": 5,
 		"connectTimeoutSeconds": 5,
-		"reconnectMaxDelaySeconds": 30
+		"reconnectMaxDelaySeconds": 30,
+		"tickIntervalMs": 50
 	},
 	"app": {},
 	"log": {
